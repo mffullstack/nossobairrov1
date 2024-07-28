@@ -1,15 +1,6 @@
-# Configuração do Firebase
-config = {
-"apiKey": "AIzaSyBzthvxscj5zKr75fXpem_e0eYsb3hjFX4",
- "authDomain": "fir-6f35e.firebaseapp.com",
- "databaseURL": "https://fir-6f35e.firebaseio.com",
- "projectId": "fir-6f35e",
- "storageBucket": "fir-6f35e.appspot.com",
- "messagingSenderId": "327696031907",
- "appId": "1:327696031907:web:865a41ff5aa45da28e9f16",
- "measurementId": "G-DBKF58X6KK"
-
-}
+secret_key_supa = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhianVqa2V5d3JlZHBjenRtd3F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjIyMDA4MDUsImV4cCI6MjAzNzc3NjgwNX0.aPH90RqfjklH3AjzSsieAT-Nkude6t0FKUQTk3i1Tsc"
+supabase_url = "https://xbjujkeywredpcztmwqx.supabase.co"
+supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhianVqa2V5d3JlZHBjenRtd3F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjIyMDA4MDUsImV4cCI6MjAzNzc3NjgwNX0.aPH90RqfjklH3AjzSsieAT-Nkude6t0FKUQTk3i1Tsc"
 
 # Configuração da chave API
-API_KEY = "AIzaSyBWhKAgsZoZfNx65XW7DIcYbe4L2RPESQI"
+API_KEY_gemeni = "AIzaSyBWhKAgsZoZfNx65XW7DIcYbe4L2RPESQI"

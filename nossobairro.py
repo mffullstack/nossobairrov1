@@ -1,23 +1,21 @@
 from flask import Flask, request, render_template, redirect, url_for, flash
-import firebase_admin
-from firebase_admin import credentials, db
-from ftplib import FTP
-from io import BytesIO
 import uuid
 import google.generativeai as gmeni
 from credenciais import *  # Certifique-se de ter um arquivo credenciais.py com suas credenciais
+from supabase import create_client, Client
+from ftplib import FTP
+from io import BytesIO
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'  # Defina uma chave secreta para usar com flash messages
+app.secret_key = secret_key_supa
 
-# Inicialização do Firebase
-cred = credentials.Certificate('fir-6f35e-firebase-adminsdk-5mjto-cb4d3788c7.json')
-firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://fir-6f35e.firebaseio.com/'
-})
+# Inicialização do Supabase
+supabase_url = supabase_url
+supabase_key = supabase_key
+supabase: Client = create_client(supabase_url, supabase_key)
 
 # Configuração da API do Google GenerativeAI
-gmeni.configure(api_key=API_KEY)
+gmeni.configure(api_key=API_KEY_gemeni)
 
 def generate_and_save_html(descricao_estabelecimento):
     model = gmeni.GenerativeModel('gemini-pro')
@@ -31,11 +29,19 @@ def generate_and_save_html(descricao_estabelecimento):
     return generated_html, file_name
 
 def check_and_send_html_to_ftp(html_content, file_name):
-    ftp = FTP("ftpupload.net", "if0_36660217", "VV6z1ZhDuhKApb")
+    ftp = FTP("ftpupload.net", "if0_36660217", "VV6z1ZhDuhKApb")  # Substitua pelas suas credenciais FTP
     html_file = BytesIO(html_content.encode('utf-8'))
     html_file.seek(0)
     ftp.storbinary(f"STOR /htdocs/{file_name}", html_file)
     ftp.quit()
+
+def save_to_supabase(data):
+    response = supabase.table('guiadebairro').insert(data).execute()
+    # Verifique se a resposta contém dados
+    if response.data:
+        return True
+    else:
+        return False
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -66,11 +72,14 @@ def index():
             'site': site
         }
 
-        # Gravar dados no Firebase Realtime Database
-        ref = db.reference('guiadebairro')
-        ref.push(data)
+        # Gravar dados no Supabase
+        success = save_to_supabase(data)
 
-        flash('Estabelecimento cadastrado com sucesso!')
+        if success:
+            flash('Estabelecimento cadastrado com sucesso!')
+        else:
+            flash('Erro ao cadastrar estabelecimento.')
+
         return redirect(url_for('index'))
 
     return render_template('index.html')
@@ -78,12 +87,12 @@ def index():
 @app.route('/search', methods=['GET'])
 def search():
     pesquisa_nome = request.args.get('pesquisa_nome', '')
-    ref = db.reference('guiadebairro')
-    estabelecimentos = ref.get()
+    response = supabase.table('guiadebairro').select("*").execute()
+    estabelecimentos = response.data
     tabela_estabelecimentos = []
 
     if estabelecimentos:
-        for key, dados in estabelecimentos.items():
+        for dados in estabelecimentos:
             if pesquisa_nome.lower() in dados['nome'].lower():
                 tabela_estabelecimentos.append(dados)
 
@@ -91,3 +100,4 @@ def search():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
