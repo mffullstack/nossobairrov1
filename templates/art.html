@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Logotipo</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #003366; /* Azul escuro */
+            color: #ffffff;
+        }
+        .container {
+            background-color: #004080; /* Azul marinho */
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .form-group label {
+            color: #ffffff;
+        }
+        .form-control, .form-check-input, .form-select, .form-control-color {
+            border-radius: 25px; /* Arredondar bordas dos campos de texto */
+            border: 1px solid #cccccc;
+        }
+        .form-control:focus, .form-select:focus, .form-control-color:focus {
+            box-shadow: none;
+            border-color: #28a745; /* Cor da borda ao focar no campo */
+        }
+        .btn-custom {
+            background-color: #28a745; /* Verde */
+            border: none;
+            color: #ffffff;
+            border-radius: 25px; /* Borda arredondada para os botões */
+        }
+        .btn-custom:hover {
+            background-color: #218838; /* Verde escuro */
+            color: #ffffff;
+        }
+        .flash-message {
+            margin-top: 20px;
+        }
+        .flash-message ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .flash-message li {
+            background: #d9534f;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .color-picker {
+            width: 50px; /* Largura menor para o color picker */
+            height: 30px; /* Altura ajustada */
+            padding: 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .logo-container {
+            margin-bottom: 20px; /* Espaçamento entre o logotipo e o botão de download */
+        }
+    </style>
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Gerador de Logotipo</h1>
+        <form action="/art" method="post">
+            <div class="form-group">
+                <label for="company_name">Nome da Empresa:</label>
+                <input type="text" class="form-control" id="company_name" name="company_name" required>
+            </div>
+            <div class="form-group">
+                <label for="slogan">Slogan:</label>
+                <input type="text" class="form-control" id="slogan" name="slogan" required>
+            </div>
+            <div class="form-group">
+                <label for="font">Fonte:</label>
+                <select class="form-select" id="font" name="font" required>
+                    <option value="Montserrat">Montserrat</option>
+                    <option value="Lobster">Lobster</option>
+                    <option value="Roboto">Roboto</option>
+                    <option value="Playfair Display">Playfair Display</option>
+                    <option value="Raleway">Raleway</option>
+                    <option value="Bebas Neue">Bebas Neue</option>
+                    <option value="Oswald">Oswald</option>
+                    <option value="Poppins">Poppins</option>
+                    <option value="Anton">Anton</option>
+                    <option value="Dancing Script">Dancing Script</option>
+                    <option value="Fira Sans">Fira Sans</option>
+                    <option value="Indie Flower">Indie Flower</option>
+                    <option value="Lora">Lora</option>
+                    <option value="Merriweather">Merriweather</option>
+                    <option value="Noto Sans">Noto Sans</option>
+                    <option value="Sora">Sora</option>
+                    <option value="Source Sans Pro">Source Sans Pro</option>
+                    <option value="Ubuntu">Ubuntu</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="background_color">Cor de Fundo:</label>
+                <input type="color" class="form-control color-picker" id="background_color" name="background_color" value="#ffffff" required>
+            </div>
+            <div class="form-group">
+                <label for="text_color">Cor do Texto:</label>
+                <input type="color" class="form-control color-picker" id="text_color" name="text_color" value="#000000" required>
+            </div>
+            <button type="submit" class="btn btn-custom">Gerar Logotipo</button>
+        </form>
+        <br>
+        {% if request.args.get('filename') %}
+        <h2 class="text-center">Logotipo Gerado:</h2>
+        <div class="logo-container text-center">
+            <img src="{{ url_for('uploaded_file', filename=request.args.get('filename')) }}" alt="Logotipo" class="img-fluid">
+            <br>
+            <a href="{{ url_for('uploaded_file', filename=request.args.get('filename')) }}" class="btn btn-custom" download>Baixar Logotipo</a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
+
+
