@@ -55,6 +55,7 @@ def download_font(font_name):
         "Libre Baskerville": "https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap",
         "Varela Round": "https://fonts.googleapis.com/css2?family=Varela+Round&display=swap",
         "Arvo": "https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&display=swap",
+        
     }
     try:
         font_url = font_urls.get(font_name, font_urls["Roboto"])
@@ -77,7 +78,7 @@ def generate_unique_identifier(seed):
     return hashlib.md5(seed.encode()).hexdigest()
 
 # Função para gerar o logotipo
-def generate_unique_logo(company_name, slogan, font_name, background_color, text_color, base_width=800, base_height=400, font_size=60):
+def generate_unique_logo(company_name, slogan, font_name, background_color, text_color, social_links, base_width=800, base_height=400, font_size=60):
     try:
         font_file = download_font(font_name)
         font = ImageFont.truetype(font_file, font_size)
@@ -89,19 +90,36 @@ def generate_unique_logo(company_name, slogan, font_name, background_color, text
         name_width, name_height = draw.textsize(company_name, font=font)
         slogan_width, slogan_height = draw.textsize(slogan, font=font)
         
-        logo_width = max(base_width, max(name_width, slogan_width) + 40)
-        logo_height = max(base_height, name_height + slogan_height + 80)
+        # Adicionar palavras das redes sociais e "Telefone"
+        social_media = social_links.splitlines()
+        social_media_widths = [draw.textsize(sm, font=font)[0] for sm in social_media]
+        social_media_heights = [draw.textsize(sm, font=font)[1] for sm in social_media]
+        
+        # Ajustar a largura e altura da imagem para acomodar o texto e o espaçamento
+        logo_width = max(base_width, max(name_width, slogan_width, sum(social_media_widths) + 80) + 40)
+        logo_height = max(base_height, name_height + slogan_height + max(social_media_heights) + 80)  # Ajustar a altura
         
         img = Image.new('RGB', (logo_width, logo_height), background_color)
         draw = ImageDraw.Draw(img)
         
         # Ajustar a posição do texto
-        name_position = ((logo_width - name_width) / 2, (logo_height - name_height - slogan_height) / 2 - 10)
-        slogan_position = ((logo_width - slogan_width) / 2, name_position[1] + name_height + 10)
+        name_position = ((logo_width - name_width) / 2, (logo_height - name_height - slogan_height - max(social_media_heights) - 30) / 2 - 10)
+        slogan_position = ((logo_width - slogan_width) / 2, name_position[1] + name_height + 30)
         
         # Adicionar textos à imagem
         draw.text(name_position, company_name, fill=text_color, font=font)
         draw.text(slogan_position, slogan, fill=text_color, font=font)
+        
+        # Adicionar palavras das redes sociais e "Telefone" lado a lado
+        total_social_width = sum(social_media_widths)
+        space_between = (logo_width - total_social_width) / (len(social_media) + 1)
+        x_position = space_between
+        
+        for sm in social_media:
+            sm_width = draw.textsize(sm, font=font)[0]
+            sm_position = (x_position, slogan_position[1] + slogan_height + 20)
+            draw.text(sm_position, sm, fill=text_color, font=font)
+            x_position += sm_width + space_between
         
         return img
     except Exception as e:
@@ -116,13 +134,14 @@ def art():
         font_name = request.form['font']
         background_color_hex = request.form['background_color']
         text_color_hex = request.form['text_color']
+        social_links = request.form['social_links']
         
         # Converter cores hexadecimais para RGB
         background_color = hex_to_rgb(background_color_hex)
         text_color = hex_to_rgb(text_color_hex)
         
         try:
-            logo = generate_unique_logo(company_name, slogan, font_name, background_color, text_color)
+            logo = generate_unique_logo(company_name, slogan, font_name, background_color, text_color, social_links)
             identifier = generate_unique_identifier(company_name + slogan)
             filename = f'logo_{identifier}.png'
             logo_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -141,4 +160,5 @@ def uploaded_file(filename):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
