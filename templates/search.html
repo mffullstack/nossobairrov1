@@ -4,24 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pesquisa de Estabelecimentos</title>
-    <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Fonts (exemplo fictício) -->
-    <link href="https://fonts.googleapis.com/css2?family=Rank+Ocean+Blond:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
     <style>
         body {
             margin: 0;
             padding: 0;
             color: #ffffff;
-            overflow-x: hidden; /* Evitar barra de rolagem horizontal */
-            background-color: #2d4159; /* Cor de fundo após a seção de parallax */
-            font-family: 'Rank Ocean Blond', sans-serif; /* Aplicar a fonte ao corpo */
+            overflow-x: hidden;
+            background-color: #2d4159;
+            font-family: 'Rank Ocean Blond', sans-serif;
         }
         .parallax {
             background-image: url('http://meustestes.42web.io/nossobairro3.jpg');
-            height: 300px; /* Ajuste a altura conforme necessário */
-            background-attachment: fixed; /* Efeito parallax */
+            height: 300px;
+            background-attachment: fixed;
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
@@ -34,9 +30,9 @@
         }
         .parallax h1, .parallax h2 {
             margin: 0;
-            color: rgba(255, 255, 255, 0.9); /* Cor branca com opacidade para suavizar o contraste */
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* Sombra do texto para melhorar a legibilidade */
-            font-family: 'Rank Ocean Blond', sans-serif; /* Aplicar a fonte aos cabeçalhos */
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+            font-family: 'Rank Ocean Blond', sans-serif;
         }
         .parallax h1 {
             font-size: 2.5rem;
@@ -49,27 +45,27 @@
         .content {
             position: relative;
             z-index: 2;
-            background-color: rgba(0, 64, 128, 0.8); /* Azul marinho com transparência */
+            background-color: rgba(0, 64, 128, 0.8);
             border-radius: 8px;
             padding: 20px;
-            margin-top: 50px; /* Ajuste o valor para o espaçamento desejado */
+            margin-top: 50px;
         }
         .form-control {
-            border-radius: 25px; /* Arredondar bordas dos campos de texto */
+            border-radius: 25px;
             border: 1px solid #cccccc;
         }
         .form-control:focus {
             box-shadow: none;
-            border-color: #28a745; /* Cor da borda ao focar no campo */
+            border-color: #28a745;
         }
         .btn-custom {
-            background-color: #28a745; /* Verde */
+            background-color: #28a745;
             border: none;
             color: #ffffff;
-            border-radius: 25px; /* Borda arredondada para os botões */
+            border-radius: 25px;
         }
         .btn-custom:hover {
-            background-color: #218838; /* Verde escuro */
+            background-color: #218838;
             color: #ffffff;
         }
         .flash-message {
@@ -90,14 +86,19 @@
             margin-bottom: 15px;
         }
         .card-body {
-            background-color: #003366; /* Azul escuro */
+            background-color: #003366;
             color: #ffffff;
         }
+        .card-body.patrocinado {
+            border: 2px solid #FFD700;
+            background-color: #004080;
+        }
+        .patrocinado .card-title::before {
+            content: "$";
+            margin-right: 5px;
+            color: #FFD700;
+        }
     </style>
-    <!-- jQuery and Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 <body>
     <div class="parallax">
@@ -111,7 +112,7 @@
         <form method="get" action="{{ url_for('search') }}">
             <div class="form-group">
                 <label for="pesquisa_nome">Pesquisar por nome:</label>
-                <input type="text" class="form-control" id="pesquisa_nome" name="pesquisa_nome" value="{{ pesquisa_nome }}">
+                <input type="text" class="form-control" id="pesquisa_nome" name="pesquisa_nome" value="{{ pesquisa_nome }}" aria-label="Nome do Estabelecimento">
             </div>
             <div class="d-flex justify-content-between">
                 <button type="submit" class="btn btn-custom">Pesquisar</button>
@@ -124,12 +125,12 @@
                 {% for estabelecimento in estabelecimentos %}
                     <div class="col-md-4">
                         <div class="card">
-                            <div class="card-body">
+                            <div class="card-body {% if estabelecimento.patrocinado %}patrocinado{% endif %}">
                                 <h5 class="card-title">{{ estabelecimento['nome'] }}</h5>
                                 <p class="card-text">
                                     <strong>Endereço:</strong> {{ estabelecimento['endereco'] }}<br>
                                     {% if estabelecimento.get('site') %}
-                                        <strong>Site:</strong> <a href="{{ estabelecimento['site'] }}" target="_blank">{{ estabelecimento['site'] }}</a><br>
+                                        <strong>Site:</strong> <a href="{{ estabelecimento['site'] }}" target="_blank" rel="noopener noreferrer">{{ estabelecimento['site'] }}</a><br>
                                     {% endif %}
                                     {% if estabelecimento.get('descricao') %}
                                         <strong>Descrição:</strong> {{ estabelecimento['descricao'] }}<br>
@@ -151,5 +152,3 @@
     </div>
 </body>
 </html>
-
-
