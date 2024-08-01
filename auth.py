@@ -7,7 +7,6 @@ from ftplib import FTP
 from io import BytesIO
 import bcrypt
 
-
 app = Flask(__name__)
 app.secret_key = secret_key_supa
 
@@ -70,7 +69,18 @@ def register_user(email, password):
         print(f"Erro ao registrar usuário: {e}")
         return False
 
+def login_required(f):
+    """Decorator to ensure that the user is logged in before accessing the route."""
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route('/', methods=['GET', 'POST'])
+@login_required
 def index():
     if request.method == 'POST':
         nome = request.form.get('nome')
@@ -112,6 +122,7 @@ def index():
     return render_template('index.html')
 
 @app.route('/search', methods=['GET'])
+@login_required
 def search():
     pesquisa_nome = request.args.get('pesquisa_nome', '')
     try:

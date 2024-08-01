@@ -4,37 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Estabelecimento</title>
+    <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
     <style>
         body {
-            background-color: #003366;
+            background-color: #003366; /* Azul escuro */
             color: #ffffff;
         }
         .container {
-            background-color: #004080;
+            background-color: #004080; /* Azul marinho */
             border-radius: 8px;
             padding: 20px;
             margin-top: 20px;
+            position: relative; /* Para posicionar a saudação e o botão corretamente */
+        }
+        .greeting {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px; /* Espaçamento entre a saudação e o botão de logout */
+        }
+        .logout-button {
+            margin-bottom: 20px; /* Espaçamento entre o botão de logout e o título do formulário */
+            text-align: left; /* Alinha o botão à esquerda */
         }
         .form-group label {
             color: #ffffff;
         }
         .form-control, .form-check-input {
-            border-radius: 25px;
+            border-radius: 25px; /* Arredondar bordas dos campos de texto */
             border: 1px solid #cccccc;
         }
         .form-control:focus {
             box-shadow: none;
-            border-color: #28a745;
+            border-color: #28a745; /* Cor da borda ao focar no campo */
         }
         .btn-custom {
-            background-color: #28a745;
+            background-color: #28a745; /* Verde */
             border: none;
             color: #ffffff;
-            border-radius: 25px;
+            border-radius: 25px; /* Borda arredondada para os botões */
         }
         .btn-custom:hover {
-            background-color: #218838;
+            background-color: #218838; /* Verde escuro */
             color: #ffffff;
         }
         .flash-message {
@@ -52,6 +65,7 @@
             margin-bottom: 10px;
         }
     </style>
+    <!-- jQuery and Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -65,6 +79,12 @@
 </head>
 <body>
     <div class="container">
+        <div class="greeting">
+            Seja bem-vindo, {{ session['user'] }}
+        </div>
+        <div class="logout-button">
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Sair</a>
+        </div>
         <h1 class="text-center">Cadastro de Estabelecimento</h1>
         <form method="post">
             <div class="form-group">
@@ -117,4 +137,5 @@
     </div>
 </body>
 </html>
+
 

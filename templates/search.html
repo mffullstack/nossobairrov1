@@ -15,7 +15,7 @@
             font-family: 'Rank Ocean Blond', sans-serif;
         }
         .parallax {
-            background-image: url('http://meustestes.42web.io/nossobairro3.jpg');
+            background-image: url('/static/nossobairro3.jpg');
             height: 300px;
             background-attachment: fixed;
             background-position: center;
@@ -42,7 +42,7 @@
             font-size: 1.25rem;
             margin-top: 0;
         }
-        .content {
+        .container {
             position: relative;
             z-index: 2;
             background-color: rgba(0, 64, 128, 0.8);
@@ -98,6 +98,16 @@
             margin-right: 5px;
             color: #FFD700;
         }
+        .greeting {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px; /* Espaçamento entre a saudação e o botão de logout */
+        }
+        .logout-button {
+            margin-bottom: 20px; /* Espaçamento entre o botão de logout e o conteúdo da página */
+            text-align: left; /* Alinha o botão à esquerda */
+        }
     </style>
 </head>
 <body>
@@ -107,7 +117,16 @@
             <h2>Conectando comunidades e estabelecimentos locais</h2>
         </div>
     </div>
-    <div class="container content">
+    <div class="container">
+        <!-- Saudação e Botão de Logout -->
+        <div class="greeting">
+            Seja bem-vindo, {{ session['user'] }}
+        </div>
+        <div class="logout-button">
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Sair</a>
+        </div>
+        
+        <!-- Conteúdo da Página -->
         <h1 class="text-center">Pesquisa de Estabelecimentos</h1>
         <form method="get" action="{{ url_for('search') }}">
             <div class="form-group">
