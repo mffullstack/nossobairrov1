@@ -72,15 +72,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Saudação e Botão de Logout -->
-        <div class="greeting">
-            Seja bem-vindo, {{ session['user'] }}
-        </div>
-        <div class="logout-button">
-            <a href="{{ url_for('logout') }}" class="btn btn-danger">Sair</a>
-        </div>
-
-        <!-- Conteúdo da Página -->
         <h1 class="text-center">Meus Estabelecimentos</h1>
         <br>
         {% if estabelecimentos %}
@@ -89,20 +80,21 @@
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-body {% if estabelecimento.patrocinado %}patrocinado{% endif %}">
-                                <h5 class="card-title">{{ estabelecimento['nome'] }}</h5>
+                                <h5 class="card-title">{{ estabelecimento.nome }}</h5>
                                 <p class="card-text">
-                                    <strong>Endereço:</strong> {{ estabelecimento['endereco'] }}<br>
-                                    {% if estabelecimento.get('site') %}
-                                        <strong>Site:</strong> <a href="{{ estabelecimento['site'] }}" target="_blank" rel="noopener noreferrer">{{ estabelecimento['site'] }}</a><br>
+                                    <strong>Endereço:</strong> {{ estabelecimento.endereco }}<br>
+                                    {% if estabelecimento.site %}
+                                        <strong>Site:</strong> <a href="{{ estabelecimento.site }}" target="_blank" rel="noopener noreferrer">{{ estabelecimento.site }}</a><br>
                                     {% endif %}
-                                    {% if estabelecimento.get('descricao') %}
-                                        <strong>Descrição:</strong> {{ estabelecimento['descricao'] }}<br>
+                                    {% if estabelecimento.descricao %}
+                                        <strong>Descrição:</strong> {{ estabelecimento.descricao }}<br>
                                     {% endif %}
-                                    {% if estabelecimento.get('imagem') %}
+                                    {% if estabelecimento.imagem %}
                                         <strong>Imagem:</strong><br>
-                                        <img src="{{ estabelecimento['imagem'] }}" alt="Imagem do estabelecimento" class="img-fluid"><br>
+                                        <img src="{{ estabelecimento.imagem }}" alt="Imagem do estabelecimento" class="img-fluid"><br>
                                     {% endif %}
                                 </p>
+                                <a href="{{ url_for('editar_estabelecimento', id=estabelecimento.id) }}" class="btn btn-warning">Editar Estabelecimento</a>
                             </div>
                         </div>
                     </div>
@@ -115,3 +107,4 @@
     </div>
 </body>
 </html>
+

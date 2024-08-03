@@ -158,6 +158,34 @@ def meus_estabelecimentos():
 
     return render_template('meus_estabelecimentos.html', estabelecimentos=estabelecimentos)
 
+
+
+@app.route('/editar_estabelecimento/<int:id>', methods=['GET', 'POST'])
+def editar_estabelecimento(id):
+    if request.method == 'POST':
+        nome = request.form.get('nome')
+        endereco = request.form.get('endereco')
+        imagem = request.form.get('imagem')
+        descricao = request.form.get('descricao')
+        patrocinado = 'patrocinado' in request.form
+
+        # Atualizar o estabelecimento no Supabase
+        supabase.table('guiadebairro').update({
+            'nome': nome,
+            'endereco': endereco,
+            'imagem': imagem,
+            'patrocinado': patrocinado
+        }).eq('id', id).execute()
+
+        return redirect(url_for('meus_estabelecimentos'))
+
+    # Buscar o estabelecimento pelo ID
+    estabelecimento = supabase.table('guiadebairro').select('*').eq('id', id).execute()
+    return render_template('editar_estabelecimento.html', estabelecimento=estabelecimento.data[0])
+
+
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -193,6 +221,7 @@ def register():
             flash('Erro ao registrar usuário.')
 
     return render_template('register.html')
+
 
 @app.route('/logout')
 def logout():
