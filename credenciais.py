@@ -4,3 +4,5 @@ supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 
 # Configuração da chave API
 API_KEY_gemeni = "AIzaSyBWhKAgsZoZfNx65XW7DIcYbe4L2RPESQI"
+
+HANGFACE_TOKEN = "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"

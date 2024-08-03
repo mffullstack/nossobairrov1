@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesquisa de Estabelecimentos</title>
+    <title>Meus Estabelecimentos</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -14,41 +14,11 @@
             background-color: #2d4159;
             font-family: 'Rank Ocean Blond', sans-serif;
         }
-        .parallax {
-            background-image: url('/static/nossobairro3.jpg');
-            height: 300px;
-            background-attachment: fixed;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            text-align: center;
-            z-index: 1;
-        }
-        .parallax h1, .parallax h2 {
-            margin: 0;
-            color: rgba(255, 255, 255, 0.9);
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-            font-family: 'Rank Ocean Blond', sans-serif;
-        }
-        .parallax h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .parallax h2 {
-            font-size: 1.25rem;
-            margin-top: 0;
-        }
         .container {
-            position: relative;
-            z-index: 2;
             background-color: rgba(0, 64, 128, 0.8);
             border-radius: 8px;
             padding: 20px;
-            margin-top: 50px;
+            margin-top: 20px;
         }
         .form-control {
             border-radius: 25px;
@@ -98,25 +68,9 @@
             margin-right: 5px;
             color: #FFD700;
         }
-        .greeting {
-            font-size: 18px;
-            font-weight: bold;
-            color: #ffffff;
-            margin-bottom: 10px; /* Espaçamento entre a saudação e o botão de logout */
-        }
-        .logout-button {
-            margin-bottom: 20px; /* Espaçamento entre o botão de logout e o conteúdo da página */
-            text-align: left; /* Alinha o botão à esquerda */
-        }
     </style>
 </head>
 <body>
-    <div class="parallax">
-        <div>
-            <h1>Nosso Bairro</h1>
-            <h2>Conectando comunidades e estabelecimentos locais</h2>
-        </div>
-    </div>
     <div class="container">
         <!-- Saudação e Botão de Logout -->
         <div class="greeting">
@@ -127,17 +81,7 @@
         </div>
 
         <!-- Conteúdo da Página -->
-        <h1 class="text-center">Pesquisa de Estabelecimentos</h1>
-        <form method="get" action="{{ url_for('search') }}">
-            <div class="form-group">
-                <label for="pesquisa_nome">Pesquisar por nome:</label>
-                <input type="text" class="form-control" id="pesquisa_nome" name="pesquisa_nome" value="{{ pesquisa_nome }}" aria-label="Nome do Estabelecimento">
-            </div>
-            <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-custom">Pesquisar</button>
-                <a href="{{ url_for('index') }}" class="btn btn-custom">Voltar ao Cadastro</a>
-            </div>
-        </form>
+        <h1 class="text-center">Meus Estabelecimentos</h1>
         <br>
         {% if estabelecimentos %}
             <div class="row">
@@ -165,7 +109,7 @@
                 {% endfor %}
             </div>
         {% else %}
-            <p class="text-center">Nenhum estabelecimento encontrado com o nome '{{ pesquisa_nome }}'.</p>
+            <p class="text-center">Você ainda não cadastrou nenhum estabelecimento.</p>
         {% endif %}
         <br>
     </div>
