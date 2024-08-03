@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pesquisa de Estabelecimentos</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
             margin: 0;
@@ -13,6 +14,69 @@
             overflow-x: hidden;
             background-color: #2d4159;
             font-family: 'Rank Ocean Blond', sans-serif;
+        }
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #003366;
+            padding-top: 20px;
+            color: white;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar .header {
+            padding: 10px 20px;
+            border-bottom: 1px solid #004080;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sidebar .header .greeting {
+            font-size: 14px;
+            color: #ffffff;
+        }
+        .sidebar .header .logout-button {
+            margin-left: auto;
+        }
+        .sidebar .header .logout-button a {
+            padding: 5px 10px;
+            font-size: 14px;
+            color: #ffffff;
+            background-color: #d9534f;
+            border-radius: 20px;
+            text-align: center;
+            text-decoration: none;
+        }
+        .sidebar .header .logout-button a:hover {
+            background-color: #c9302c;
+        }
+        .sidebar h2 {
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 16px;
+            color: white;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #004080;
+        }
+        .sidebar a:hover {
+            background-color: #004080;
+        }
+        .sidebar i {
+            margin-right: 10px;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
         }
         .parallax {
             background-image: url('/static/nossobairro3.jpg');
@@ -43,8 +107,6 @@
             margin-top: 0;
         }
         .container {
-            position: relative;
-            z-index: 2;
             background-color: rgba(0, 64, 128, 0.8);
             border-radius: 8px;
             padding: 20px;
@@ -98,76 +160,79 @@
             margin-right: 5px;
             color: #FFD700;
         }
-        .greeting {
-            font-size: 18px;
-            font-weight: bold;
-            color: #ffffff;
-            margin-bottom: 10px; /* Espaçamento entre a saudação e o botão de logout */
-        }
-        .logout-button {
-            margin-bottom: 20px; /* Espaçamento entre o botão de logout e o conteúdo da página */
-            text-align: left; /* Alinha o botão à esquerda */
-        }
     </style>
 </head>
 <body>
-    <div class="parallax">
-        <div>
-            <h1>Nosso Bairro</h1>
-            <h2>Conectando comunidades e estabelecimentos locais</h2>
+    <div class="sidebar">
+        <div class="header">
+            <div class="greeting">
+                Seja bem-vindo, {{ session['user'] }}
+            </div>
+            <div class="logout-button">
+                <a href="{{ url_for('logout') }}">Sair</a>
+            </div>
         </div>
+        <h2>Nosso Bairro</h2>
+        <a href="{{ url_for('index') }}"><i class="fas fa-plus"></i>Cadastrar Estabelecimento</a>
+        <a href="{{ url_for('meus_estabelecimentos') }}"><i class="fas fa-list"></i>Meus Estabelecimentos</a>
+        <a href="{{ url_for('search') }}"><i class="fas fa-search"></i>Pesquisar</a>
     </div>
-    <div class="container">
-        <!-- Saudação e Botão de Logout -->
-        <div class="greeting">
-            Seja bem-vindo, {{ session['user'] }}
-        </div>
-        <div class="logout-button">
-            <a href="{{ url_for('logout') }}" class="btn btn-danger">Sair</a>
+    
+    <div class="main-content">
+        <div class="parallax">
+            <div>
+                <h1>Nosso Bairro</h1>
+                <h2>Conectando comunidades e estabelecimentos locais</h2>
+            </div>
         </div>
 
-        <!-- Conteúdo da Página -->
-        <h1 class="text-center">Pesquisa de Estabelecimentos</h1>
-        <form method="get" action="{{ url_for('search') }}">
-            <div class="form-group">
-                <label for="pesquisa_nome">Pesquisar por nome:</label>
-                <input type="text" class="form-control" id="pesquisa_nome" name="pesquisa_nome" value="{{ pesquisa_nome }}" aria-label="Nome do Estabelecimento">
-            </div>
-            <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-custom">Pesquisar</button>
-                <a href="{{ url_for('index') }}" class="btn btn-custom">Voltar ao Cadastro</a>
-            </div>
-        </form>
-        <br>
-        {% if estabelecimentos %}
-            <div class="row">
-                {% for estabelecimento in estabelecimentos %}
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-body {% if estabelecimento.patrocinado %}patrocinado{% endif %}">
-                                <h5 class="card-title">{{ estabelecimento['nome'] }}</h5>
-                                <p class="card-text">
-                                    <strong>Endereço:</strong> {{ estabelecimento['endereco'] }}<br>
-                                    {% if estabelecimento.get('site') %}
-                                        <strong>Site:</strong> <a href="{{ estabelecimento['site'] }}" target="_blank" rel="noopener noreferrer">{{ estabelecimento['site'] }}</a><br>
-                                    {% endif %}
-                                    {% if estabelecimento.get('descricao') %}
-                                        <strong>Descrição:</strong> {{ estabelecimento['descricao'] }}<br>
-                                    {% endif %}
-                                    {% if estabelecimento.get('imagem') %}
-                                        <strong>Imagem:</strong><br>
-                                        <img src="{{ estabelecimento['imagem'] }}" alt="Imagem do estabelecimento" class="img-fluid"><br>
-                                    {% endif %}
-                                </p>
+        <div class="container">
+            <!-- Conteúdo da Página -->
+            <h1 class="text-center">Pesquisa de Estabelecimentos</h1>
+            <form method="get" action="{{ url_for('search') }}">
+                <div class="form-group">
+                    <label for="pesquisa_nome">Pesquisar por nome:</label>
+                    <input type="text" class="form-control" id="pesquisa_nome" name="pesquisa_nome" value="{{ pesquisa_nome }}" aria-label="Nome do Estabelecimento">
+                </div>
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-custom">Pesquisar</button>
+                    <a href="{{ url_for('index') }}" class="btn btn-custom">Voltar ao Cadastro</a>
+                </div>
+            </form>
+            <br>
+            {% if estabelecimentos %}
+                <div class="row">
+                    {% for estabelecimento in estabelecimentos %}
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body {% if estabelecimento.patrocinado %}patrocinado{% endif %}">
+                                    <h5 class="card-title">{{ estabelecimento['nome'] }}</h5>
+                                    <p class="card-text">
+                                        <strong>Endereço:</strong> {{ estabelecimento['endereco'] }}<br>
+                                        {% if estabelecimento.get('site') %}
+                                            <strong>Site:</strong> <a href="{{ estabelecimento['site'] }}" target="_blank" rel="noopener noreferrer">{{ estabelecimento['site'] }}</a><br>
+                                        {% endif %}
+                                        {% if estabelecimento.get('descricao') %}
+                                            <strong>Descrição:</strong> {{ estabelecimento['descricao'] }}<br>
+                                        {% endif %}
+                                        {% if estabelecimento.get('imagem') %}
+                                            <strong>Imagem:</strong><br>
+                                            <img src="{{ estabelecimento['imagem'] }}" alt="Imagem do estabelecimento" class="img-fluid"><br>
+                                        {% endif %}
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="text-center">Nenhum estabelecimento encontrado com o nome '{{ pesquisa_nome }}'.</p>
-        {% endif %}
-        <br>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center">Nenhum estabelecimento encontrado com o nome '{{ pesquisa_nome }}'.</p>
+            {% endif %}
+            <br>
+        </div>
     </div>
 </body>
 </html>
+
+
+

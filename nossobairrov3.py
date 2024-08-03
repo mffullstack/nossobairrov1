@@ -161,6 +161,7 @@ def meus_estabelecimentos():
 
 
 @app.route('/editar_estabelecimento/<int:id>', methods=['GET', 'POST'])
+@login_required
 def editar_estabelecimento(id):
     if request.method == 'POST':
         nome = request.form.get('nome')
