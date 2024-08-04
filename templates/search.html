@@ -47,12 +47,12 @@
             top: 10px;
             right: -40px;
             z-index: 2;
-            background-color: #2d4159; /* Mantém a cor original */
+            background-color: #2d4159;
             border-radius: 50%;
             padding: 10px;
         }
         .sidebar .header .toggle-btn:hover {
-            background-color: #28a745; /* Cor verde no hover */
+            background-color: #28a745;
         }
         .sidebar .header .greeting {
             font-size: 14px;
@@ -88,7 +88,7 @@
             border-bottom: 1px solid #004080;
         }
         .sidebar a:hover {
-            background-color: #28a745; /* Cor verde no hover */
+            background-color: #28a745;
         }
         .sidebar i {
             margin-right: 10px;
@@ -170,7 +170,7 @@
                 <a href="{{ url_for('logout') }}">Sair</a>
             </div>
         </div>
-        <h2>Menu</h2>
+        <h2>Nosso Bairro</h2>
         <a href="{{ url_for('index') }}"><i class="fas fa-plus"></i>Cadastrar Estabelecimento</a>
         <a href="{{ url_for('meus_estabelecimentos') }}"><i class="fas fa-list"></i>Meus Estabelecimentos</a>
         <a href="{{ url_for('search') }}" class="active"><i class="fas fa-search"></i>Pesquisar</a>
@@ -209,6 +209,7 @@
                                             <strong>Imagem:</strong><br>
                                             <img src="{{ estabelecimento.imagem }}" alt="Imagem do estabelecimento" class="img-fluid"><br>
                                         {% endif %}
+                                        <strong>Categoria:</strong> {{ estabelecimento.categoria }}<br> <!-- Exibe a categoria -->
                                     </p>
                                 </div>
                             </div>
@@ -232,5 +233,3 @@
     </script>
 </body>
 </html>
-
-

@@ -79,6 +79,8 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+
+
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
@@ -89,6 +91,7 @@ def index():
         descricao = request.form.get('descricao')
         gerar_site = request.form.get('gerar_site')
         imagem = request.form.get('imagem')
+        categoria = request.form.get('categoria')
 
         if not nome or not endereco:
             flash('Nome e endereço são obrigatórios!')
@@ -104,6 +107,7 @@ def index():
 
         data = {
             'nome': nome,
+            'categoria': categoria, 
             'endereco': endereco,
             'imagem': imagem,
             'site': site,
@@ -168,6 +172,7 @@ def editar_estabelecimento(id):
         endereco = request.form.get('endereco')
         imagem = request.form.get('imagem')
         descricao = request.form.get('descricao')
+        cateogira = request.form.get('categoria')
         patrocinado = 'patrocinado' in request.form
 
         # Atualizar o estabelecimento no Supabase
@@ -175,7 +180,8 @@ def editar_estabelecimento(id):
             'nome': nome,
             'endereco': endereco,
             'imagem': imagem,
-            'patrocinado': patrocinado
+            'patrocinado': patrocinado,
+            'categoria': cateogira
         }).eq('id', id).execute()
 
         return redirect(url_for('meus_estabelecimentos'))
