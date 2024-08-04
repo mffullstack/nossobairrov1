@@ -21,12 +21,16 @@
             position: fixed;
             top: 0;
             left: 0;
-            background-color: #003366;
+            background-color: #2d4159;
             padding-top: 20px;
             color: white;
             z-index: 1;
             display: flex;
             flex-direction: column;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.hidden {
+            margin-left: -250px;
         }
         .sidebar .header {
             padding: 10px 20px;
@@ -34,6 +38,21 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+        }
+        .sidebar .header .toggle-btn {
+            font-size: 20px;
+            cursor: pointer;
+            color: #ffffff;
+            position: absolute;
+            top: 10px;
+            right: -40px;
+            z-index: 2;
+            background-color: #2d4159; /* Mantém a cor original */
+            border-radius: 50%;
+            padding: 10px;
+        }
+        .sidebar .header .toggle-btn:hover {
+            background-color: #28a745; /* Cor verde no hover */
         }
         .sidebar .header .greeting {
             font-size: 14px;
@@ -69,7 +88,7 @@
             border-bottom: 1px solid #004080;
         }
         .sidebar a:hover {
-            background-color: #004080;
+            background-color: #28a745; /* Cor verde no hover */
         }
         .sidebar i {
             margin-right: 10px;
@@ -77,40 +96,16 @@
         .main-content {
             margin-left: 250px;
             padding: 20px;
+            transition: margin-left 0.3s;
         }
-        .parallax {
-            background-image: url('/static/nossobairro3.jpg');
-            height: 300px;
-            background-attachment: fixed;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            text-align: center;
-            z-index: 1;
-        }
-        .parallax h1, .parallax h2 {
-            margin: 0;
-            color: rgba(255, 255, 255, 0.9);
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-            font-family: 'Rank Ocean Blond', sans-serif;
-        }
-        .parallax h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .parallax h2 {
-            font-size: 1.25rem;
-            margin-top: 0;
+        .main-content.shift {
+            margin-left: 0;
         }
         .container {
             background-color: rgba(0, 64, 128, 0.8);
             border-radius: 8px;
             padding: 20px;
-            margin-top: 50px;
+            margin-top: 20px;
         }
         .form-control {
             border-radius: 25px;
@@ -165,6 +160,9 @@
 <body>
     <div class="sidebar">
         <div class="header">
+            <span class="toggle-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </span>
             <div class="greeting">
                 Seja bem-vindo, {{ session['user'] }}
             </div>
@@ -172,22 +170,14 @@
                 <a href="{{ url_for('logout') }}">Sair</a>
             </div>
         </div>
-        <h2>Nosso Bairro</h2>
+        <h2>Menu</h2>
         <a href="{{ url_for('index') }}"><i class="fas fa-plus"></i>Cadastrar Estabelecimento</a>
         <a href="{{ url_for('meus_estabelecimentos') }}"><i class="fas fa-list"></i>Meus Estabelecimentos</a>
-        <a href="{{ url_for('search') }}"><i class="fas fa-search"></i>Pesquisar</a>
+        <a href="{{ url_for('search') }}" class="active"><i class="fas fa-search"></i>Pesquisar</a>
     </div>
-    
-    <div class="main-content">
-        <div class="parallax">
-            <div>
-                <h1>Nosso Bairro</h1>
-                <h2>Conectando comunidades e estabelecimentos locais</h2>
-            </div>
-        </div>
 
+    <div class="main-content">
         <div class="container">
-            <!-- Conteúdo da Página -->
             <h1 class="text-center">Pesquisa de Estabelecimentos</h1>
             <form method="get" action="{{ url_for('search') }}">
                 <div class="form-group">
@@ -206,18 +196,18 @@
                         <div class="col-md-4">
                             <div class="card">
                                 <div class="card-body {% if estabelecimento.patrocinado %}patrocinado{% endif %}">
-                                    <h5 class="card-title">{{ estabelecimento['nome'] }}</h5>
+                                    <h5 class="card-title">{{ estabelecimento.nome }}</h5>
                                     <p class="card-text">
-                                        <strong>Endereço:</strong> {{ estabelecimento['endereco'] }}<br>
-                                        {% if estabelecimento.get('site') %}
-                                            <strong>Site:</strong> <a href="{{ estabelecimento['site'] }}" target="_blank" rel="noopener noreferrer">{{ estabelecimento['site'] }}</a><br>
+                                        <strong>Endereço:</strong> {{ estabelecimento.endereco }}<br>
+                                        {% if estabelecimento.site %}
+                                            <strong>Site:</strong> <a href="{{ estabelecimento.site }}" target="_blank" rel="noopener noreferrer">{{ estabelecimento.site }}</a><br>
                                         {% endif %}
-                                        {% if estabelecimento.get('descricao') %}
-                                            <strong>Descrição:</strong> {{ estabelecimento['descricao'] }}<br>
+                                        {% if estabelecimento.descricao %}
+                                            <strong>Descrição:</strong> {{ estabelecimento.descricao }}<br>
                                         {% endif %}
-                                        {% if estabelecimento.get('imagem') %}
+                                        {% if estabelecimento.imagem %}
                                             <strong>Imagem:</strong><br>
-                                            <img src="{{ estabelecimento['imagem'] }}" alt="Imagem do estabelecimento" class="img-fluid"><br>
+                                            <img src="{{ estabelecimento.imagem }}" alt="Imagem do estabelecimento" class="img-fluid"><br>
                                         {% endif %}
                                     </p>
                                 </div>
@@ -231,8 +221,16 @@
             <br>
         </div>
     </div>
+
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.querySelector('.sidebar');
+            var mainContent = document.querySelector('.main-content');
+            sidebar.classList.toggle('hidden');
+            mainContent.classList.toggle('shift');
+        }
+    </script>
 </body>
 </html>
-
 
 

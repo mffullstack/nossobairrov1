@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus Estabelecimentos</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
             margin: 0;
@@ -13,6 +14,92 @@
             overflow-x: hidden;
             background-color: #2d4159;
             font-family: 'Rank Ocean Blond', sans-serif;
+        }
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #2d4159;
+            padding-top: 20px;
+            color: white;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.hidden {
+            margin-left: -250px;
+        }
+        .sidebar .header {
+            padding: 10px 20px;
+            border-bottom: 1px solid #004080;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sidebar .header .toggle-btn {
+            font-size: 20px;
+            cursor: pointer;
+            color: #ffffff;
+            position: absolute;
+            top: 10px;
+            right: -40px;
+            z-index: 2;
+            background-color: #2d4159; /* Mantém a cor original */
+            border-radius: 50%;
+            padding: 10px;
+        }
+        .sidebar .header .toggle-btn:hover {
+            background-color: #28a745; /* Cor verde no hover */
+        }
+        .sidebar .header .greeting {
+            font-size: 14px;
+            color: #ffffff;
+        }
+        .sidebar .header .logout-button {
+            margin-left: auto;
+        }
+        .sidebar .header .logout-button a {
+            padding: 5px 10px;
+            font-size: 14px;
+            color: #ffffff;
+            background-color: #d9534f;
+            border-radius: 20px;
+            text-align: center;
+            text-decoration: none;
+        }
+        .sidebar .header .logout-button a:hover {
+            background-color: #c9302c;
+        }
+        .sidebar h2 {
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 16px;
+            color: white;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #004080;
+        }
+        .sidebar a:hover {
+            background-color: #28a745; /* Cor verde no hover */
+        }
+        .sidebar i {
+            margin-right: 10px;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s;
+        }
+        .main-content.shift {
+            margin-left: 0;
         }
         .container {
             background-color: rgba(0, 64, 128, 0.8);
@@ -71,40 +158,70 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center">Meus Estabelecimentos</h1>
-        <br>
-        {% if estabelecimentos %}
-            <div class="row">
-                {% for estabelecimento in estabelecimentos %}
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-body {% if estabelecimento.patrocinado %}patrocinado{% endif %}">
-                                <h5 class="card-title">{{ estabelecimento.nome }}</h5>
-                                <p class="card-text">
-                                    <strong>Endereço:</strong> {{ estabelecimento.endereco }}<br>
-                                    {% if estabelecimento.site %}
-                                        <strong>Site:</strong> <a href="{{ estabelecimento.site }}" target="_blank" rel="noopener noreferrer">{{ estabelecimento.site }}</a><br>
-                                    {% endif %}
-                                    {% if estabelecimento.descricao %}
-                                        <strong>Descrição:</strong> {{ estabelecimento.descricao }}<br>
-                                    {% endif %}
-                                    {% if estabelecimento.imagem %}
-                                        <strong>Imagem:</strong><br>
-                                        <img src="{{ estabelecimento.imagem }}" alt="Imagem do estabelecimento" class="img-fluid"><br>
-                                    {% endif %}
-                                </p>
-                                <a href="{{ url_for('editar_estabelecimento', id=estabelecimento.id) }}" class="btn btn-warning">Editar Estabelecimento</a>
+    <div class="sidebar">
+        <div class="header">
+            <span class="toggle-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </span>
+            <div class="greeting">
+                Seja bem-vindo, {{ session['user'] }}
+            </div>
+            <div class="logout-button">
+                <a href="{{ url_for('logout') }}">Sair</a>
+            </div>
+        </div>
+        <h2>Menu</h2>
+        <a href="{{ url_for('index') }}"><i class="fas fa-plus"></i>Cadastrar Estabelecimento</a>
+        <a href="{{ url_for('meus_estabelecimentos') }}"><i class="fas fa-list"></i>Meus Estabelecimentos</a>
+        <a href="{{ url_for('search') }}"><i class="fas fa-search"></i>Pesquisar</a>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <h1 class="text-center">Meus Estabelecimentos</h1>
+            <br>
+            {% if estabelecimentos %}
+                <div class="row">
+                    {% for estabelecimento in estabelecimentos %}
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body {% if estabelecimento.patrocinado %}patrocinado{% endif %}">
+                                    <h5 class="card-title">{{ estabelecimento.nome }}</h5>
+                                    <p class="card-text">
+                                        <strong>Endereço:</strong> {{ estabelecimento.endereco }}<br>
+                                        {% if estabelecimento.site %}
+                                            <strong>Site:</strong> <a href="{{ estabelecimento.site }}" target="_blank" rel="noopener noreferrer">{{ estabelecimento.site }}</a><br>
+                                        {% endif %}
+                                        {% if estabelecimento.descricao %}
+                                            <strong>Descrição:</strong> {{ estabelecimento.descricao }}<br>
+                                        {% endif %}
+                                        {% if estabelecimento.imagem %}
+                                            <strong>Imagem:</strong><br>
+                                            <img src="{{ estabelecimento.imagem }}" alt="Imagem do estabelecimento" class="img-fluid"><br>
+                                        {% endif %}
+                                    </p>
+                                    <a href="{{ url_for('editar_estabelecimento', id=estabelecimento.id) }}" class="btn btn-warning">Editar Estabelecimento</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="text-center">Você ainda não cadastrou nenhum estabelecimento.</p>
-        {% endif %}
-        <br>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center">Você ainda não cadastrou nenhum estabelecimento.</p>
+            {% endif %}
+            <br>
+        </div>
     </div>
+
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.querySelector('.sidebar');
+            var mainContent = document.querySelector('.main-content');
+            sidebar.classList.toggle('hidden');
+            mainContent.classList.toggle('shift');
+        }
+    </script>
 </body>
 </html>
+
 

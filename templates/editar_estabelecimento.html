@@ -11,7 +11,7 @@
             padding: 0;
             color: #ffffff;
             overflow-x: hidden;
-            background-color: #2d4159;
+            background-color: #2d4159; /* Cor de fundo da página index.html */
             font-family: 'Rank Ocean Blond', sans-serif;
         }
         .container {
@@ -38,33 +38,150 @@
             background-color: #218838;
             color: #ffffff;
         }
+        /* Estilo do menu similar ao da página index.html */
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #2d4159; /* Cor de fundo do menu */
+            padding-top: 20px;
+            color: white;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.hidden {
+            margin-left: -250px;
+        }
+        .sidebar .header {
+            padding: 10px 20px;
+            border-bottom: 1px solid #004080;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sidebar .header .toggle-btn {
+            font-size: 20px;
+            cursor: pointer;
+            color: #ffffff;
+            position: absolute;
+            top: 10px;
+            right: -40px;
+            z-index: 2;
+            background-color: #2d4159; /* Mantém a cor original */
+            border-radius: 50%;
+            padding: 10px;
+        }
+        .sidebar .header .toggle-btn:hover {
+            background-color: #28a745; /* Cor verde no hover */
+        }
+        .sidebar .header .greeting {
+            font-size: 14px;
+            color: #ffffff;
+        }
+        .sidebar .header .logout-button {
+            margin-left: auto;
+        }
+        .sidebar .header .logout-button a {
+            padding: 5px 10px;
+            font-size: 14px;
+            color: #ffffff;
+            background-color: #d9534f;
+            border-radius: 20px;
+            text-align: center;
+            text-decoration: none;
+        }
+        .sidebar .header .logout-button a:hover {
+            background-color: #c9302c;
+        }
+        .sidebar h2 {
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 16px;
+            color: white;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #004080;
+        }
+        .sidebar a:hover {
+            background-color: #28a745; /* Cor verde no hover */
+        }
+        .sidebar i {
+            margin-right: 10px;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s;
+        }
+        .main-content.shift {
+            margin-left: 0;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center">Editar Estabelecimento</h1>
-        <form method="post">
-            <div class="form-group">
-                <label for="nome">Nome do Estabelecimento:</label>
-                <input type="text" class="form-control" id="nome" name="nome" value="{{ estabelecimento.nome }}" required>
+    <div class="sidebar">
+        <div class="header">
+            <span class="toggle-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </span>
+            <div class="greeting">
+                Seja bem-vindo, {{ session['user'] }}
             </div>
-            <div class="form-group">
-                <label for="endereco">Endereço:</label>
-                <input type="text" class="form-control" id="endereco" name="endereco" value="{{ estabelecimento.endereco }}" required>
+            <div class="logout-button">
+                <a href="{{ url_for('logout') }}">Sair</a>
             </div>
-            <div class="form-group">
-                <label for="imagem">Link da Imagem:</label>
-                <input type="text" class="form-control" id="imagem" name="imagem" value="{{ estabelecimento.imagem }}">
-            </div>
-            <div class="form-group">
-           
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="patrocinado" name="patrocinado" {% if estabelecimento.patrocinado %}checked{% endif %}>
-                <label class="form-check-label" for="patrocinado">Patrocinado</label>
-            </div>
-            <br>
-            <button type="submit" class="btn btn-custom">Salvar</button>
-        </form>
+        </div>
+        <h2>Menu</h2>
+        <a href="{{ url_for('index') }}"><i class="fas fa-plus"></i>Cadastrar Estabelecimento</a>
+        <a href="{{ url_for('meus_estabelecimentos') }}"><i class="fas fa-list"></i>Meus Estabelecimentos</a>
+        <a href="{{ url_for('search') }}"><i class="fas fa-search"></i>Pesquisar</a>
     </div>
+
+    <div class="main-content">
+        <div class="container">
+            <h1 class="text-center">Editar Estabelecimento</h1>
+            <form method="post">
+                <div class="form-group">
+                    <label for="nome">Nome do Estabelecimento:</label>
+                    <input type="text" class="form-control" id="nome" name="nome" value="{{ estabelecimento.nome }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="endereco">Endereço:</label>
+                    <input type="text" class="form-control" id="endereco" name="endereco" value="{{ estabelecimento.endereco }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="imagem">Link da Imagem:</label>
+                    <input type="text" class="form-control" id="imagem" name="imagem" value="{{ estabelecimento.imagem }}">
+                </div>
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="patrocinado" name="patrocinado" {% if estabelecimento.patrocinado %}checked{% endif %}>
+                        <label class="form-check-label" for="patrocinado">Patrocinado</label>
+                    </div>
+                </div>
+                <br>
+                <button type="submit" class="btn btn-custom">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.querySelector('.sidebar');
+            var mainContent = document.querySelector('.main-content');
+            sidebar.classList.toggle('hidden');
+            mainContent.classList.toggle('shift');
+        }
+    </script>
 </body>
 </html>
+
