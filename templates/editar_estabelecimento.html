@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Estabelecimento</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
             margin: 0;
@@ -133,9 +134,20 @@
             <span class="toggle-btn" onclick="toggleSidebar()">
                 <i class="fas fa-bars"></i>
             </span>
+
+
             <div class="greeting">
-                Seja bem-vindo, {{ session['user'] }}
+                <span>
+                    <i class="fas fa-user-circle fa-2x"></i> <!-- fa-3x aumenta três vezes o tamanho do ícone -->
+                      <br/>
+                    Seja bem-vindo, {{ session['user'] }}
+                </span>
+            
             </div>
+            
+
+            
+
             <div class="logout-button">
                 <a href="{{ url_for('logout') }}">Sair</a>
             </div>
