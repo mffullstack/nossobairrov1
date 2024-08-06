@@ -149,19 +149,14 @@
             </span>
             <div class="greeting">
                 <span>
-                    <i class="fas fa-user-circle fa-2x"></i> <!-- fa-3x aumenta três vezes o tamanho do ícone -->
-                      <br/>
+                    <i class="fas fa-user-circle fa-2x"></i>
+                    <br/>
                     Seja bem-vindo, {{ session['user'] }}
                 </span>
-            
             </div>
-        
-            
             <div class="logout-button">
                 <a href="{{ url_for('logout') }}">Sair</a>
             </div>
-            
-            
         </div>
         <h2>Nosso Bairro</h2>
         <a href="{{ url_for('index') }}"><i class="fas fa-plus"></i>Cadastrar Estabelecimento</a>
@@ -173,31 +168,33 @@
         <div class="container">
             <h1 class="text-center">Cadastro de Estabelecimento</h1>
             <form method="post">
-                <div class="form-group">
-                    <label for="nome">Nome do Estabelecimento:</label>
-                    <input type="text" class="form-control" id="nome" name="nome" required>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="nome">Nome do Estabelecimento:</label>
+                        <input type="text" class="form-control" id="nome" name="nome" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="endereco">Endereço:</label>
+                        <input type="text" class="form-control" id="endereco" name="endereco" required>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="endereco">Endereço:</label>
-                    <input type="text" class="form-control" id="endereco" name="endereco" required>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="imagem">Link da Imagem:</label>
+                        <input type="text" class="form-control" id="imagem" name="imagem">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="categoria">Categoria:</label>
+                        <select class="form-control" id="categoria" name="categoria">
+                            <option value="restaurante">Restaurante</option>
+                            <option value="cafeteria">Cafeteria</option>
+                            <option value="salao_de_beleza">Salão de Beleza</option>
+                            <option value="academia">Academia</option>
+                            <option value="pet_shop">Pet Shop</option>
+                            <!-- Adicione outras categorias conforme necessário -->
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="imagem">Link da Imagem:</label>
-                    <input type="text" class="form-control" id="imagem" name="imagem">
-                </div>
-
-                <div class="form-group">
-                    <label for="categoria">Categoria:</label>
-                    <select class="form-control" id="categoria" name="categoria">
-                        <option value="restaurante">Restaurante</option>
-                        <option value="cafeteria">Cafeteria</option>
-                        <option value="salao_de_beleza">Salão de Beleza</option>
-                        <option value="academia">Academia</option>
-                        <option value="pet_shop">Pet Shop</option>
-                        <!-- Adicione outras categorias conforme necessário -->
-                    </select>
-                </div>
-
                 <fieldset class="form-group">
                     <legend>Deseja gerar um site para o estabelecimento?</legend>
                     <div class="form-check">
@@ -213,8 +210,40 @@
                     <label for="descricao">Descrição do Negócio:</label>
                     <textarea class="form-control" id="descricao" name="descricao"></textarea>
                 </div>
-
-        
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="horario_funcionamento">Horário de Funcionamento:</label>
+                        <input type="text" class="form-control" id="horario_funcionamento" name="horario_funcionamento">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="contato">Contato:</label>
+                        <input type="text" class="form-control" id="contato" name="contato">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="redes_sociais">Redes Sociais:</label>
+                        <input type="text" class="form-control" id="redes_sociais" name="redes_sociais">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="tipo_servico_produto">Tipo de Serviço/Produto:</label>
+                        <input type="text" class="form-control" id="tipo_servico_produto" name="tipo_servico_produto">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="metodos_pagamento">Métodos de Pagamento:</label>
+                        <input type="text" class="form-control" id="metodos_pagamento" name="metodos_pagamento">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="como_chegar">Como Chegar:</label>
+                        <textarea class="form-control" id="como_chegar" name="como_chegar"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="sobre_estabelecimento">Sobre o Estabelecimento:</label>
+                    <textarea class="form-control" id="sobre_estabelecimento" name="sobre_estabelecimento"></textarea>
+                </div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="patrocinado" name="patrocinado" value="sim">
                     <label class="form-check-label" for="patrocinado">Patrocinado</label>

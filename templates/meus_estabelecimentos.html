@@ -47,12 +47,12 @@
             top: 10px;
             right: -40px;
             z-index: 2;
-            background-color: #2d4159; /* Mantém a cor original */
+            background-color: #2d4159;
             border-radius: 50%;
             padding: 10px;
         }
         .sidebar .header .toggle-btn:hover {
-            background-color: #28a745; /* Cor verde no hover */
+            background-color: #28a745;
         }
         .sidebar .header .greeting {
             font-size: 14px;
@@ -88,7 +88,7 @@
             border-bottom: 1px solid #004080;
         }
         .sidebar a:hover {
-            background-color: #28a745; /* Cor verde no hover */
+            background-color: #28a745;
         }
         .sidebar i {
             margin-right: 10px;
@@ -107,23 +107,46 @@
             padding: 20px;
             margin-top: 20px;
         }
-        .form-control {
-            border-radius: 25px;
-            border: 1px solid #cccccc;
+        .card {
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background-color: #003366;
+            color: #ffffff;
+            overflow: hidden;
+            position: relative;
         }
-        .form-control:focus {
-            box-shadow: none;
-            border-color: #28a745;
+        .card-img-top {
+            width: 100%;
+            height: auto;
+        }
+        .card-body {
+            padding: 15px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px; /* Espaço entre os botões */
+            margin-top: 10px; /* Espaço acima dos botões */
+        }
+        .btn-custom, .btn-edit {
+            border: none;
+            color: #ffffff; /* Cor do texto */
+            border-radius: 25px; /* Raio da borda dos botões */
+            padding: 5px 15px; /* Adiciona padding aos botões */
+            cursor: pointer; /* Muda o cursor para pointer ao passar sobre os botões */
+            text-align: center; /* Centraliza o texto */
+            font-size: 14px; /* Tamanho da fonte */
         }
         .btn-custom {
-            background-color: #28a745;
-            border: none;
-            color: #ffffff;
-            border-radius: 25px;
+            background-color: #28a745; /* Cor de fundo do botão Ver mais */
         }
         .btn-custom:hover {
-            background-color: #218838;
-            color: #ffffff;
+            background-color: #218838; /* Cor de fundo quando o botão Ver mais é hover */
+        }
+        .btn-edit {
+            background-color: #28a745; /* Cor de fundo do botão Editar Estabelecimento */
+        }
+        .btn-edit:hover {
+            background-color: #218838; /* Cor de fundo quando o botão Editar Estabelecimento é hover */
         }
         .flash-message {
             margin-top: 20px;
@@ -139,21 +162,40 @@
             border-radius: 5px;
             margin-bottom: 10px;
         }
-        .card {
-            margin-bottom: 15px;
-        }
-        .card-body {
-            background-color: #003366;
-            color: #ffffff;
-        }
-        .card-body.patrocinado {
+        .card.patrocinado {
             border: 2px solid #FFD700;
-            background-color: #004080;
         }
-        .patrocinado .card-title::before {
-            content: "$";
-            margin-right: 5px;
-            color: #FFD700;
+        .patrocinado-badge {
+            display: block;
+            background-color: #FFD700;
+            color: #003366;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-top: 10px;
+            margin-bottom: 10px; /* Adiciona espaço abaixo do selo */
+            text-align: center;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+        }
+        .info-col {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .info-col:last-child {
+            margin-right: 0;
+        }
+        .card-title {
+            margin-top: 10px; /* Adiciona espaço acima do título, se necessário */
+        }
+        .hidden-info {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
         }
     </style>
 </head>
@@ -163,17 +205,13 @@
             <span class="toggle-btn" onclick="toggleSidebar()">
                 <i class="fas fa-bars"></i>
             </span>
-
             <div class="greeting">
                 <span>
-                    <i class="fas fa-user-circle fa-2x"></i> <!-- fa-3x aumenta três vezes o tamanho do ícone -->
-                      <br/>
+                    <i class="fas fa-user-circle fa-2x"></i>
+                    <br/>
                     Seja bem-vindo, {{ session['user'] }}
                 </span>
-            
             </div>
-            
-            
             <div class="logout-button">
                 <a href="{{ url_for('logout') }}">Sair</a>
             </div>
@@ -192,31 +230,60 @@
                 <div class="row">
                     {% for estabelecimento in estabelecimentos %}
                         <div class="col-md-4">
-                            <div class="card">
-                                <div class="card-body {% if estabelecimento.patrocinado %}patrocinado{% endif %}">
+                            <div class="card {% if estabelecimento.patrocinado %}patrocinado{% endif %}">
+                                {% if estabelecimento.imagem %}
+                                    <img src="{{ estabelecimento.imagem }}" alt="Imagem do estabelecimento" class="card-img-top">
+                                {% endif %}
+                                <div class="card-body">
+                                    {% if estabelecimento.patrocinado %}
+                                        <div class="patrocinado-badge">Em destaque</div>
+                                    {% endif %}
                                     <h5 class="card-title">{{ estabelecimento.nome }}</h5>
-                                    <p class="card-text">
-                                        <strong>Endereço:</strong> {{ estabelecimento.endereco }}<br>
-                                        {% if estabelecimento.site %}
-                                            <strong>Site:</strong> <a href="{{ estabelecimento.site }}" target="_blank" rel="noopener noreferrer">{{ estabelecimento.site }}</a><br>
-                                        {% endif %}
+                                    <div class="info-row">
+                                        <div class="info-col">
+                                            <p><strong>Endereço:</strong> {{ estabelecimento.endereco }}</p>
+                                            <p><strong>Categoria:</strong> {{ estabelecimento.categoria }}</p>
+                                        </div>
+                                        <div class="info-col">
+                                            {% if estabelecimento.contato %}
+                                                <p><strong>Contato:</strong> {{ estabelecimento.contato }}</p>
+                                            {% endif %}
+                                            {% if estabelecimento.redes_sociais %}
+                                                <p><strong>Redes Sociais:</strong> {{ estabelecimento.redes_sociais }}</p>
+                                            {% endif %}
+                                            {% if estabelecimento.como_chegar %}
+                                                <p><strong>Como Chegar:</strong> {{ estabelecimento.como_chegar }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="button-group">
+                                        <button class="btn-custom" onclick="toggleMoreInfo({{ estabelecimento.id }})">Ver mais</button>
+                                        <button class="btn-edit" onclick="window.location.href='{{ url_for('editar_estabelecimento', id=estabelecimento.id) }}'">Editar Estabelecimento</button>
+                                    </div>
+                                    <div id="more-info-{{ estabelecimento.id }}" class="hidden-info">
                                         {% if estabelecimento.descricao %}
-                                            <strong>Descrição:</strong> {{ estabelecimento.descricao }}<br>
+                                            <p><strong>Descrição:</strong> {{ estabelecimento.descricao }}</p>
                                         {% endif %}
-                                        {% if estabelecimento.imagem %}
-                                            <strong>Imagem:</strong><br>
-                                            <img src="{{ estabelecimento.imagem }}" alt="Imagem do estabelecimento" class="img-fluid"><br>
+                                        {% if estabelecimento.horario_funcionamento %}
+                                            <p><strong>Horário de Funcionamento:</strong> {{ estabelecimento.horario_funcionamento }}</p>
                                         {% endif %}
-                                        <strong>Categoria:</strong> {{ estabelecimento.categoria }}<br> <!-- Inclusão da categoria -->
-                                    </p>
-                                    <a href="{{ url_for('editar_estabelecimento', id=estabelecimento.id) }}" class="btn btn-warning">Editar Estabelecimento</a>
+                                        {% if estabelecimento.tipo_servico_produto %}
+                                            <p><strong>Tipo de Serviço/Produto:</strong> {{ estabelecimento.tipo_servico_produto }}</p>
+                                        {% endif %}
+                                        {% if estabelecimento.metodos_pagamento %}
+                                            <p><strong>Métodos de Pagamento:</strong> {{ estabelecimento.metodos_pagamento }}</p>
+                                        {% endif %}
+                                        {% if estabelecimento.sobre_estabelecimento %}
+                                            <p><strong>Sobre o Estabelecimento:</strong> {{ estabelecimento.sobre_estabelecimento }}</p>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="text-center">Você ainda não cadastrou nenhum estabelecimento.</p>
+                <p class="text-center">Nenhum estabelecimento encontrado.</p>
             {% endif %}
             <br>
         </div>
@@ -229,8 +296,22 @@
             sidebar.classList.toggle('hidden');
             mainContent.classList.toggle('shift');
         }
+
+        function toggleMoreInfo(id) {
+            var moreInfo = document.getElementById('more-info-' + id);
+            var button = moreInfo.previousElementSibling;
+            if (moreInfo.style.display === 'none' || moreInfo.style.display === '') {
+                moreInfo.style.display = 'block';
+                button.textContent = 'Ver menos';
+            } else {
+                moreInfo.style.display = 'none';
+                button.textContent = 'Ver mais';
+            }
+        }
     </script>
 </body>
 </html>
+
+
 
 

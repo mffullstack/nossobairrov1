@@ -7,12 +7,13 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
+        /* Estilos personalizados, conforme necessário */
         body {
             margin: 0;
             padding: 0;
             color: #ffffff;
             overflow-x: hidden;
-            background-color: #2d4159; /* Cor de fundo da página index.html */
+            background-color: #2d4159;
             font-family: 'Rank Ocean Blond', sans-serif;
         }
         .container {
@@ -39,170 +40,99 @@
             background-color: #218838;
             color: #ffffff;
         }
-        /* Estilo do menu similar ao da página index.html */
-        .sidebar {
-            height: 100%;
-            width: 250px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #2d4159; /* Cor de fundo do menu */
-            padding-top: 20px;
-            color: white;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            transition: margin-left 0.3s;
-        }
-        .sidebar.hidden {
-            margin-left: -250px;
-        }
-        .sidebar .header {
-            padding: 10px 20px;
-            border-bottom: 1px solid #004080;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .sidebar .header .toggle-btn {
-            font-size: 20px;
-            cursor: pointer;
-            color: #ffffff;
-            position: absolute;
-            top: 10px;
-            right: -40px;
-            z-index: 2;
-            background-color: #2d4159; /* Mantém a cor original */
-            border-radius: 50%;
-            padding: 10px;
-        }
-        .sidebar .header .toggle-btn:hover {
-            background-color: #28a745; /* Cor verde no hover */
-        }
-        .sidebar .header .greeting {
-            font-size: 14px;
-            color: #ffffff;
-        }
-        .sidebar .header .logout-button {
-            margin-left: auto;
-        }
-        .sidebar .header .logout-button a {
-            padding: 5px 10px;
-            font-size: 14px;
-            color: #ffffff;
-            background-color: #d9534f;
-            border-radius: 20px;
-            text-align: center;
-            text-decoration: none;
-        }
-        .sidebar .header .logout-button a:hover {
-            background-color: #c9302c;
-        }
-        .sidebar h2 {
-            color: rgba(255, 255, 255, 0.9);
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .sidebar a {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-size: 16px;
-            color: white;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid #004080;
-        }
-        .sidebar a:hover {
-            background-color: #28a745; /* Cor verde no hover */
-        }
-        .sidebar i {
-            margin-right: 10px;
-        }
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
-            transition: margin-left 0.3s;
-        }
-        .main-content.shift {
-            margin-left: 0;
-        }
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="header">
-            <span class="toggle-btn" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
-            </span>
-
-
-            <div class="greeting">
-                <span>
-                    <i class="fas fa-user-circle fa-2x"></i> <!-- fa-3x aumenta três vezes o tamanho do ícone -->
-                      <br/>
-                    Seja bem-vindo, {{ session['user'] }}
-                </span>
-            
-            </div>
-            
-
-            
-
-            <div class="logout-button">
-                <a href="{{ url_for('logout') }}">Sair</a>
-            </div>
-        </div>
-        <h2>Nosso Bairro</h2>
-        <a href="{{ url_for('index') }}"><i class="fas fa-plus"></i>Cadastrar Estabelecimento</a>
-        <a href="{{ url_for('meus_estabelecimentos') }}"><i class="fas fa-list"></i>Meus Estabelecimentos</a>
-        <a href="{{ url_for('search') }}"><i class="fas fa-search"></i>Pesquisar</a>
-    </div>
-
-    <div class="main-content">
-        <div class="container">
-            <h1 class="text-center">Editar Estabelecimento</h1>
-            <form method="post">
-                <div class="form-group">
+    <div class="container">
+        <h1 class="text-center">Editar Estabelecimento</h1>
+        <form method="post">
+            <div class="form-row">
+                <div class="form-group col-md-6">
                     <label for="nome">Nome do Estabelecimento:</label>
                     <input type="text" class="form-control" id="nome" name="nome" value="{{ estabelecimento.nome }}" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group col-md-6">
                     <label for="endereco">Endereço:</label>
                     <input type="text" class="form-control" id="endereco" name="endereco" value="{{ estabelecimento.endereco }}" required>
                 </div>
-                <div class="form-group">
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
                     <label for="imagem">Link da Imagem:</label>
                     <input type="text" class="form-control" id="imagem" name="imagem" value="{{ estabelecimento.imagem }}">
                 </div>
-                <div class="form-group">
+                <div class="form-group col-md-6">
                     <label for="categoria">Categoria:</label>
                     <select class="form-control" id="categoria" name="categoria">
-                        <option value="restaurante">Restaurante</option>
-                        <option value="cafeteria">Cafeteria</option>
-                        <option value="salao_de_beleza">Salão de Beleza</option>
-                        <option value="academia">Academia</option>
-                        <option value="pet_shop">Pet Shop</option>
-                        <!-- Adicione outras categorias conforme necessário -->
+                        <option value="restaurante" {% if estabelecimento.categoria == 'restaurante' %}selected{% endif %}>Restaurante</option>
+                        <option value="cafeteria" {% if estabelecimento.categoria == 'cafeteria' %}selected{% endif %}>Cafeteria</option>
+                        <option value="salao_de_beleza" {% if estabelecimento.categoria == 'salao_de_beleza' %}selected{% endif %}>Salão de Beleza</option>
+                        <option value="academia" {% if estabelecimento.categoria == 'academia' %}selected{% endif %}>Academia</option>
+                        <option value="pet_shop" {% if estabelecimento.categoria == 'pet_shop' %}selected{% endif %}>Pet Shop</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="patrocinado" name="patrocinado" {% if estabelecimento.patrocinado %}checked{% endif %}>
-                        <label class="form-check-label" for="patrocinado">Patrocinado</label>
-                    </div>
+            </div>
+            <fieldset class="form-group">
+                <legend>Deseja gerar um site para o estabelecimento?</legend>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="gerar_site_sim" name="gerar_site" value="sim" {% if estabelecimento.gerar_site == 'sim' %}checked{% endif %} onclick="toggleDescriptionField()" required>
+                    <label class="form-check-label" for="gerar_site_sim">Sim</label>
                 </div>
-                <br>
-                <button type="submit" class="btn btn-custom">Salvar</button>
-            </form>
-        </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="gerar_site_nao" name="gerar_site" value="nao" {% if estabelecimento.gerar_site == 'nao' %}checked{% endif %} onclick="toggleDescriptionField()" required>
+                    <label class="form-check-label" for="gerar_site_nao">Não</label>
+                </div>
+            </fieldset>
+            <div id="descricaoField" class="form-group" style="display: {% if estabelecimento.gerar_site == 'sim' %}block{% else %}none{% endif %};">
+                <label for="descricao">Descrição do Negócio:</label>
+                <textarea class="form-control" id="descricao" name="descricao">{{ estabelecimento.descricao }}</textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="horario_funcionamento">Horário de Funcionamento:</label>
+                    <input type="text" class="form-control" id="horario_funcionamento" name="horario_funcionamento" value="{{ estabelecimento.horario_funcionamento }}">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="contato">Contato:</label>
+                    <input type="text" class="form-control" id="contato" name="contato" value="{{ estabelecimento.contato }}">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="redes_sociais">Redes Sociais:</label>
+                    <input type="text" class="form-control" id="redes_sociais" name="redes_sociais" value="{{ estabelecimento.redes_sociais }}">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="tipo_servico_produto">Tipo de Serviço/Produto:</label>
+                    <input type="text" class="form-control" id="tipo_servico_produto" name="tipo_servico_produto" value="{{ estabelecimento.tipo_servico_produto }}">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="metodos_pagamento">Métodos de Pagamento:</label>
+                    <input type="text" class="form-control" id="metodos_pagamento" name="metodos_pagamento" value="{{ estabelecimento.metodos_pagamento }}">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="como_chegar">Como Chegar:</label>
+                    <textarea class="form-control" id="como_chegar" name="como_chegar">{{ estabelecimento.como_chegar }}</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="patrocinado" name="patrocinado" {% if estabelecimento.patrocinado %}checked{% endif %}>
+                    <label class="form-check-label" for="patrocinado">Patrocinado</label>
+                </div>
+            </div>
+            <div class="form-group text-center">
+                <button type="submit" class="btn btn-custom">Salvar Alterações</button>
+            </div>
+        </form>
     </div>
-
     <script>
-        function toggleSidebar() {
-            var sidebar = document.querySelector('.sidebar');
-            var mainContent = document.querySelector('.main-content');
-            sidebar.classList.toggle('hidden');
-            mainContent.classList.toggle('shift');
+        function toggleDescriptionField() {
+            var gerarSite = document.querySelector('input[name="gerar_site"]:checked').value;
+            var descricaoField = document.getElementById('descricaoField');
+            descricaoField.style.display = gerarSite === 'sim' ? 'block' : 'none';
         }
     </script>
 </body>

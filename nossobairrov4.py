@@ -23,6 +23,7 @@ def generate_and_save_html(descricao_estabelecimento):
     input_text = f"Crie uma landing page simples voltada para esse tipo de negócio {descricao_estabelecimento}, utilizando HTML e com as sessões início, sobre nós e contato respectivamente. O CSS precisa ser escrito no mesmo arquivo"
     response = model.generate_content(input_text)
     generated_html = response.text
+    # Remove caracteres desnecessários
     generated_html = generated_html.replace("html", "").replace("", "")
     file_name = str(uuid.uuid4()) + ".html"
     with open(file_name, "w", encoding="utf-8") as html_file:
@@ -79,8 +80,6 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-
-
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
@@ -91,11 +90,17 @@ def index():
         descricao = request.form.get('descricao')
         gerar_site = request.form.get('gerar_site')
 
+        # Novos campos
+        horario_funcionamento = request.form.get('horario_funcionamento')
+        contato = request.form.get('contato')
+        redes_sociais = request.form.get('redes_sociais')
+        tipo_servico_produto = request.form.get('tipo_servico_produto')
+        metodos_pagamento = request.form.get('metodos_pagamento')
+        como_chegar = request.form.get('como_chegar')
+        sobre_estabelecimento = request.form.get('sobre_estabelecimento')  # Novo campo
 
-        
         imagem = request.form.get('imagem')
         categoria = request.form.get('categoria')
-
 
         if not nome or not endereco:
             flash('Nome e endereço são obrigatórios!')
@@ -111,12 +116,19 @@ def index():
 
         data = {
             'nome': nome,
-            'categoria': categoria, 
+            'categoria': categoria,
             'endereco': endereco,
             'imagem': imagem,
             'site': site,
-            'patrocinado': request.form.get('patrocinado', 'nao') == 'sim',  # Adiciona o campo patrocinado
-            'email_usuario': session['user']  # Adiciona o campo de identificação do usuário
+            'patrocinado': request.form.get('patrocinado', 'nao') == 'sim',
+            'email_usuario': session['user'],
+            'horario_funcionamento': horario_funcionamento,
+            'contato': contato,
+            'redes_sociais': redes_sociais,
+            'tipo_servico_produto': tipo_servico_produto,
+            'metodos_pagamento': metodos_pagamento,
+            'como_chegar': como_chegar,
+            'sobre_estabelecimento': sobre_estabelecimento  # Incluindo o novo campo
         }
 
         success = save_to_supabase(data)
@@ -166,8 +178,6 @@ def meus_estabelecimentos():
 
     return render_template('meus_estabelecimentos.html', estabelecimentos=estabelecimentos)
 
-
-
 @app.route('/editar_estabelecimento/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editar_estabelecimento(id):
@@ -176,8 +186,17 @@ def editar_estabelecimento(id):
         endereco = request.form.get('endereco')
         imagem = request.form.get('imagem')
         descricao = request.form.get('descricao')
-        cateogira = request.form.get('categoria')
+        categoria = request.form.get('categoria')
         patrocinado = 'patrocinado' in request.form
+
+        # Novos campos
+        horario_funcionamento = request.form.get('horario_funcionamento')
+        contato = request.form.get('contato')
+        redes_sociais = request.form.get('redes_sociais')
+        tipo_servico_produto = request.form.get('tipo_servico_produto')
+        metodos_pagamento = request.form.get('metodos_pagamento')
+        como_chegar = request.form.get('como_chegar')
+        sobre_estabelecimento = request.form.get('sobre_estabelecimento')  # Novo campo
 
         # Atualizar o estabelecimento no Supabase
         supabase.table('guiadebairro').update({
@@ -185,7 +204,14 @@ def editar_estabelecimento(id):
             'endereco': endereco,
             'imagem': imagem,
             'patrocinado': patrocinado,
-            'categoria': cateogira
+            'categoria': categoria,
+            'horario_funcionamento': horario_funcionamento,
+            'contato': contato,
+            'redes_sociais': redes_sociais,
+            'tipo_servico_produto': tipo_servico_produto,
+            'metodos_pagamento': metodos_pagamento,
+            'como_chegar': como_chegar,
+            'sobre_estabelecimento': sobre_estabelecimento  # Atualizando o campo
         }).eq('id', id).execute()
 
         return redirect(url_for('meus_estabelecimentos'))
@@ -193,9 +219,6 @@ def editar_estabelecimento(id):
     # Buscar o estabelecimento pelo ID
     estabelecimento = supabase.table('guiadebairro').select('*').eq('id', id).execute()
     return render_template('editar_estabelecimento.html', estabelecimento=estabelecimento.data[0])
-
-
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -212,7 +235,7 @@ def login():
             return redirect(url_for('index'))
         else:
             flash('Credenciais inválidas!')
-    
+
     return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -233,7 +256,6 @@ def register():
 
     return render_template('register.html')
 
-
 @app.route('/logout')
 def logout():
     session.pop('user', None)
@@ -241,4 +263,3 @@ def logout():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
