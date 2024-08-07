@@ -140,20 +140,24 @@
             margin-bottom: 10px;
         }
         .card {
-            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
             border-radius: 8px;
             background-color: #003366;
             color: #ffffff;
             overflow: hidden;
             position: relative;
+            min-height: 300px; /* Altura mínima para os cards */
         }
         .card-img-top {
             width: 100%;
             height: auto;
         }
         .card-body {
+            flex: 1;
             padding: 15px;
-            position: relative;
+            display: flex;
+            flex-direction: column;
         }
         .btn-more {
             background-color: #28a745;
@@ -163,7 +167,7 @@
             padding: 5px 10px;
             cursor: pointer;
             text-align: center;
-            margin-top: 10px;
+            margin-top: auto; /* Empurra o botão para o final do card */
         }
         .btn-more:hover {
             background-color: #218838;
@@ -195,6 +199,7 @@
         .info-row {
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
         }
         .info-col {
             flex: 1;
@@ -204,7 +209,7 @@
             margin-right: 0;
         }
         .card-title {
-            margin-top: 10px; /* Adiciona espaço acima do título, se necessário */
+            margin-top: 10px; /* Adiciona espaço acima do título */
         }
     </style>
 </head>
@@ -248,12 +253,12 @@
             {% if estabelecimentos %}
                 <div class="row">
                     {% for estabelecimento in estabelecimentos %}
-                        <div class="col-md-4">
+                        <div class="col-md-4 mb-4">
                             <div class="card {% if estabelecimento.patrocinado %}patrocinado{% endif %}">
                                 {% if estabelecimento.imagem %}
                                     <img src="{{ estabelecimento.imagem }}" alt="Imagem do estabelecimento" class="card-img-top">
                                 {% endif %}
-                                <div class="card-body">
+                                <div class="card-body d-flex flex-column">
                                     {% if estabelecimento.patrocinado %}
                                         <div class="patrocinado-badge">Em destaque</div>
                                     {% endif %}
@@ -276,7 +281,7 @@
                                         </div>
                                     </div>
                                     <button class="btn-more" onclick="toggleMoreInfo({{ estabelecimento.id }})">Ver mais</button>
-                                    <div id="more-info-{{ estabelecimento.id }}" class="hidden-info">
+                                    <div id="more-info-{{ estabelecimento.id }}" class="hidden-info mt-3">
                                         {% if estabelecimento.descricao %}
                                             <p><strong>Descrição:</strong> {{ estabelecimento.descricao }}</p>
                                         {% endif %}
@@ -291,6 +296,9 @@
                                         {% endif %}
                                         {% if estabelecimento.sobre_estabelecimento %}
                                             <p><strong>Sobre o Estabelecimento:</strong> {{ estabelecimento.sobre_estabelecimento }}</p>
+                                        {% endif %}
+                                        {% if not (estabelecimento.descricao or estabelecimento.horario_funcionamento or estabelecimento.tipo_servico_produto or estabelecimento.metodos_pagamento or estabelecimento.sobre_estabelecimento) %}
+                                            <p>Não há informações adicionais sobre o estabelecimento.</p>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -327,6 +335,5 @@
     </script>
 </body>
 </html>
-
 
 

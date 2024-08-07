@@ -108,45 +108,40 @@
             margin-top: 20px;
         }
         .card {
-            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
             border-radius: 8px;
             background-color: #003366;
             color: #ffffff;
             overflow: hidden;
             position: relative;
+            min-height: 300px;
         }
         .card-img-top {
             width: 100%;
             height: auto;
         }
         .card-body {
+            flex: 1;
             padding: 15px;
-        }
-        .button-group {
             display: flex;
-            gap: 10px; /* Espaço entre os botões */
-            margin-top: 10px; /* Espaço acima dos botões */
-        }
-        .btn-custom, .btn-edit {
-            border: none;
-            color: #ffffff; /* Cor do texto */
-            border-radius: 25px; /* Raio da borda dos botões */
-            padding: 5px 15px; /* Adiciona padding aos botões */
-            cursor: pointer; /* Muda o cursor para pointer ao passar sobre os botões */
-            text-align: center; /* Centraliza o texto */
-            font-size: 14px; /* Tamanho da fonte */
+            flex-direction: column;
         }
         .btn-custom {
-            background-color: #28a745; /* Cor de fundo do botão Ver mais */
+            background-color: #28a745;
+            border: none;
+            color: #ffffff;
+            border-radius: 25px;
+            padding: 5px 10px;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 10px;
+            text-decoration: none; /* Remove underline */
         }
         .btn-custom:hover {
-            background-color: #218838; /* Cor de fundo quando o botão Ver mais é hover */
-        }
-        .btn-edit {
-            background-color: #28a745; /* Cor de fundo do botão Editar Estabelecimento */
-        }
-        .btn-edit:hover {
-            background-color: #218838; /* Cor de fundo quando o botão Editar Estabelecimento é hover */
+            background-color: #218838; /* Darker green */
+            color: #ffffff; /* Ensure text color remains white */
+            text-decoration: none; /* Ensure no underline */
         }
         .flash-message {
             margin-top: 20px;
@@ -174,12 +169,13 @@
             border-radius: 5px;
             font-size: 14px;
             margin-top: 10px;
-            margin-bottom: 10px; /* Adiciona espaço abaixo do selo */
+            margin-bottom: 10px;
             text-align: center;
         }
         .info-row {
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
         }
         .info-col {
             flex: 1;
@@ -189,13 +185,7 @@
             margin-right: 0;
         }
         .card-title {
-            margin-top: 10px; /* Adiciona espaço acima do título, se necessário */
-        }
-        .hidden-info {
-            display: none;
             margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #ddd;
         }
     </style>
 </head>
@@ -229,12 +219,12 @@
             {% if estabelecimentos %}
                 <div class="row">
                     {% for estabelecimento in estabelecimentos %}
-                        <div class="col-md-4">
+                        <div class="col-md-4 mb-4">
                             <div class="card {% if estabelecimento.patrocinado %}patrocinado{% endif %}">
                                 {% if estabelecimento.imagem %}
                                     <img src="{{ estabelecimento.imagem }}" alt="Imagem do estabelecimento" class="card-img-top">
                                 {% endif %}
-                                <div class="card-body">
+                                <div class="card-body d-flex flex-column">
                                     {% if estabelecimento.patrocinado %}
                                         <div class="patrocinado-badge">Em destaque</div>
                                     {% endif %}
@@ -256,27 +246,8 @@
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="button-group">
-                                        <button class="btn-custom" onclick="toggleMoreInfo({{ estabelecimento.id }})">Ver mais</button>
-                                        <button class="btn-edit" onclick="window.location.href='{{ url_for('editar_estabelecimento', id=estabelecimento.id) }}'">Editar Estabelecimento</button>
-                                    </div>
-                                    <div id="more-info-{{ estabelecimento.id }}" class="hidden-info">
-                                        {% if estabelecimento.descricao %}
-                                            <p><strong>Descrição:</strong> {{ estabelecimento.descricao }}</p>
-                                        {% endif %}
-                                        {% if estabelecimento.horario_funcionamento %}
-                                            <p><strong>Horário de Funcionamento:</strong> {{ estabelecimento.horario_funcionamento }}</p>
-                                        {% endif %}
-                                        {% if estabelecimento.tipo_servico_produto %}
-                                            <p><strong>Tipo de Serviço/Produto:</strong> {{ estabelecimento.tipo_servico_produto }}</p>
-                                        {% endif %}
-                                        {% if estabelecimento.metodos_pagamento %}
-                                            <p><strong>Métodos de Pagamento:</strong> {{ estabelecimento.metodos_pagamento }}</p>
-                                        {% endif %}
-                                        {% if estabelecimento.sobre_estabelecimento %}
-                                            <p><strong>Sobre o Estabelecimento:</strong> {{ estabelecimento.sobre_estabelecimento }}</p>
-                                        {% endif %}
-                                    </div>
+                                    <!-- Botão Editar Estabelecimento -->
+                                    <a href="{{ url_for('editar_estabelecimento', id=estabelecimento.id) }}" class="btn-custom">Editar Estabelecimento</a>
                                 </div>
                             </div>
                         </div>
@@ -296,22 +267,7 @@
             sidebar.classList.toggle('hidden');
             mainContent.classList.toggle('shift');
         }
-
-        function toggleMoreInfo(id) {
-            var moreInfo = document.getElementById('more-info-' + id);
-            var button = moreInfo.previousElementSibling;
-            if (moreInfo.style.display === 'none' || moreInfo.style.display === '') {
-                moreInfo.style.display = 'block';
-                button.textContent = 'Ver menos';
-            } else {
-                moreInfo.style.display = 'none';
-                button.textContent = 'Ver mais';
-            }
-        }
     </script>
 </body>
 </html>
-
-
-
 
