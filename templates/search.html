@@ -6,6 +6,7 @@
     <title>Pesquisa de Estabelecimentos</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
         body {
             margin: 0;
@@ -211,6 +212,19 @@
         .card-title {
             margin-top: 10px; /* Adiciona espaço acima do título */
         }
+        .leaflet-container {
+            width: 100% !important;
+            height: 200px;
+            margin-top: 15px;
+        }
+        .no-map-message {
+            color: #ffffff;
+            background-color: #003366; /* Cor de fundo igual ao card */
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -234,6 +248,8 @@
         <a href="{{ url_for('index') }}"><i class="fas fa-plus"></i>Cadastrar Estabelecimento</a>
         <a href="{{ url_for('meus_estabelecimentos') }}"><i class="fas fa-list"></i>Meus Estabelecimentos</a>
         <a href="{{ url_for('search') }}" class="active"><i class="fas fa-search"></i>Pesquisar</a>
+        <!-- Nova opção adicionada -->
+        <a href="{{ url_for('perfil') }}"><i class="fas fa-user"></i>Meu Perfil</a>
     </div>
 
     <div class="main-content">
@@ -301,6 +317,14 @@
                                             <p>Não há informações adicionais sobre o estabelecimento.</p>
                                         {% endif %}
                                     </div>
+                                    <!-- Div para o mapa ou mensagem -->
+                                    <div id="map-container-{{ estabelecimento.id }}">
+                                        {% if estabelecimento.latitude and estabelecimento.longitude %}
+                                            <div id="map-{{ estabelecimento.id }}" class="leaflet-container"></div>
+                                        {% else %}
+                                            <p class="no-map-message">O endereço informado não foi encontrado no mapa.</p>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -313,7 +337,29 @@
         </div>
     </div>
 
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function initializeMaps() {
+                var establishments = {{ estabelecimentos|tojson }};
+                
+                establishments.forEach(function(establishment) {
+                    if (establishment.latitude && establishment.longitude) {
+                        var mapId = 'map-' + establishment.id;
+                        var map = L.map(mapId).setView([establishment.latitude, establishment.longitude], 13);
+
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        }).addTo(map);
+
+                        L.marker([establishment.latitude, establishment.longitude]).addTo(map);
+                    }
+                });
+            }
+
+            initializeMaps();
+        });
+
         function toggleSidebar() {
             var sidebar = document.querySelector('.sidebar');
             var mainContent = document.querySelector('.main-content');
@@ -335,5 +381,4 @@
     </script>
 </body>
 </html>
-
 

@@ -6,6 +6,7 @@ from supabase import create_client, Client
 from ftplib import FTP
 from io import BytesIO
 import bcrypt
+import requests
 
 app = Flask(__name__)
 app.secret_key = secret_key_supa
@@ -17,6 +18,27 @@ supabase: Client = create_client(supabase_url, supabase_key)
 
 # Configuração da API do Google GenerativeAI
 gmeni.configure(api_key=API_KEY_gemeni)
+
+def get_lat_long_from_address(address):
+    """Obtém latitude e longitude a partir do endereço usando a API Nominatim."""
+    try:
+        response = requests.get(
+            f"https://nominatim.openstreetmap.org/search",
+            params={
+                "q": address,
+                "format": "json",
+                "addressdetails": 1
+            }
+        )
+        data = response.json()
+        if data:
+            lat = data[0].get('lat')
+            lon = data[0].get('lon')
+            return lat, lon
+        return None, None
+    except Exception as e:
+        print(f"Erro ao buscar coordenadas: {e}")
+        return None, None
 
 def generate_and_save_html(descricao_estabelecimento):
     model = gmeni.GenerativeModel('gemini-pro')
@@ -48,6 +70,14 @@ def save_to_supabase(data):
         print(f"Erro ao salvar dados no Supabase: {e}")
         return False
 
+def update_supabase(data, id):
+    try:
+        response = supabase.table('guiadebairro').update(data).eq('id', id).execute()
+        return bool(response.data)
+    except Exception as e:
+        print(f"Erro ao atualizar dados no Supabase: {e}")
+        return False
+
 def check_user_credentials(email, password):
     try:
         response = supabase.table('usuarios').select('senha').eq('email', email).execute()
@@ -64,7 +94,11 @@ def check_user_credentials(email, password):
 def register_user(email, password):
     try:
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        response = supabase.table('usuarios').insert({'email': email, 'senha': hashed_password.decode('utf-8')}).execute()
+        response = supabase.table('usuarios').insert({
+            'email': email,
+            'senha': hashed_password.decode('utf-8'),
+            'plano': 'free'  # Define o plano como 'free' para novos usuários
+        }).execute()
         return bool(response.data)
     except Exception as e:
         print(f"Erro ao registrar usuário: {e}")
@@ -106,6 +140,12 @@ def index():
             flash('Nome e endereço são obrigatórios!')
             return redirect(url_for('index'))
 
+        # Buscar latitude e longitude
+        latitude, longitude = get_lat_long_from_address(endereco)
+        if not latitude or not longitude:
+            flash('Não foi possível obter coordenadas para o endereço fornecido.')
+            return redirect(url_for('index'))
+
         if gerar_site == 'sim':
             if not descricao or not descricao.strip():
                 flash('Por favor, preencha a descrição do negócio!')
@@ -128,7 +168,10 @@ def index():
             'tipo_servico_produto': tipo_servico_produto,
             'metodos_pagamento': metodos_pagamento,
             'como_chegar': como_chegar,
-            'sobre_estabelecimento': sobre_estabelecimento  # Incluindo o novo campo
+            'sobre_estabelecimento': sobre_estabelecimento,  # Incluindo o novo campo
+            'latitude': latitude,
+            'longitude': longitude,
+            'oculto': False  # Define o estado inicial como não oculto
         }
 
         success = save_to_supabase(data)
@@ -147,7 +190,7 @@ def index():
 def search():
     pesquisa_nome = request.args.get('pesquisa_nome', '')
     try:
-        response = supabase.table('guiadebairro').select("*").execute()
+        response = supabase.table('guiadebairro').select("*").eq('oculto', False).execute()
         estabelecimentos = response.data
         tabela_estabelecimentos = []
 
@@ -198,8 +241,11 @@ def editar_estabelecimento(id):
         como_chegar = request.form.get('como_chegar')
         sobre_estabelecimento = request.form.get('sobre_estabelecimento')  # Novo campo
 
+        # Buscar latitude e longitude do novo endereço
+        latitude, longitude = get_lat_long_from_address(endereco)
+
         # Atualizar o estabelecimento no Supabase
-        supabase.table('guiadebairro').update({
+        data = {
             'nome': nome,
             'endereco': endereco,
             'imagem': imagem,
@@ -211,14 +257,54 @@ def editar_estabelecimento(id):
             'tipo_servico_produto': tipo_servico_produto,
             'metodos_pagamento': metodos_pagamento,
             'como_chegar': como_chegar,
-            'sobre_estabelecimento': sobre_estabelecimento  # Atualizando o campo
-        }).eq('id', id).execute()
+            'sobre_estabelecimento': sobre_estabelecimento,  # Atualizando o campo
+            'latitude': latitude,
+            'longitude': longitude
+        }
+
+        success = update_supabase(data, id)
+
+        if success:
+            flash('Estabelecimento atualizado com sucesso!')
+        else:
+            flash('Erro ao atualizar estabelecimento.')
 
         return redirect(url_for('meus_estabelecimentos'))
 
     # Buscar o estabelecimento pelo ID
     estabelecimento = supabase.table('guiadebairro').select('*').eq('id', id).execute()
     return render_template('editar_estabelecimento.html', estabelecimento=estabelecimento.data[0])
+
+@app.route('/ocultar_estabelecimento/<int:id>', methods=['POST'])
+@login_required
+def ocultar_estabelecimento(id):
+    try:
+        response = supabase.table('guiadebairro').update({'oculto': True}).eq('id', id).execute()
+        if response.data:
+            flash('Estabelecimento oculto com sucesso!')
+        else:
+            flash('Erro ao ocultar estabelecimento.')
+    except Exception as e:
+        print(f"Erro ao ocultar estabelecimento: {e}")
+        flash('Erro ao ocultar estabelecimento.')
+
+    return redirect(url_for('meus_estabelecimentos'))
+
+@app.route('/mostrar_estabelecimento/<int:id>', methods=['POST'])
+@login_required
+def mostrar_estabelecimento(id):
+    try:
+        # Atualizar o estado do estabelecimento para não oculto
+        response = supabase.table('guiadebairro').update({'oculto': False}).eq('id', id).execute()
+        if response.data:
+            flash('Estabelecimento visível novamente!')
+        else:
+            flash('Erro ao tornar o estabelecimento visível.')
+    except Exception as e:
+        print(f"Erro ao mostrar o estabelecimento: {e}")
+        flash('Erro ao mostrar o estabelecimento.')
+
+    return redirect(url_for('meus_estabelecimentos'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -260,6 +346,51 @@ def register():
 def logout():
     session.pop('user', None)
     return redirect(url_for('login'))
+
+@app.route('/perfil', methods=['GET'])
+@login_required
+def perfil():
+    user_email = session.get('user')
+    try:
+        response = supabase.table('usuarios').select('email', 'plano').eq('email', user_email).execute()
+        user_data = response.data[0] if response.data else {'email': user_email, 'plano': 'free'}
+    except Exception as e:
+        print(f"Erro ao buscar dados do usuário: {e}")
+        user_data = {'email': user_email, 'plano': 'free'}
+
+    return render_template('perfil.html', email=user_data['email'], plano=user_data['plano'])
+
+@app.route('/upgrade', methods=['POST'])
+@login_required
+def upgrade():
+    user_email = session.get('user')
+    try:
+        response = supabase.table('usuarios').update({'plano': 'premium'}).eq('email', user_email).execute()
+        if response.data:
+            flash('Plano atualizado para Premium!')
+        else:
+            flash('Erro ao atualizar o plano.')
+    except Exception as e:
+        print(f"Erro ao atualizar o plano: {e}")
+        flash('Erro ao atualizar o plano.')
+
+    return redirect(url_for('perfil'))
+
+@app.route('/downgrade', methods=['POST'])
+@login_required
+def downgrade():
+    user_email = session.get('user')
+    try:
+        response = supabase.table('usuarios').update({'plano': 'free'}).eq('email', user_email).execute()
+        if response.data:
+            flash('Plano revertido para Free!')
+        else:
+            flash('Erro ao reverter o plano.')
+    except Exception as e:
+        print(f"Erro ao reverter o plano: {e}")
+        flash('Erro ao reverter o plano.')
+
+    return redirect(url_for('perfil'))
 
 if __name__ == "__main__":
     app.run(debug=True)

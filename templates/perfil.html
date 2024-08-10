@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil do Usuário</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            color: #ffffff;
+            overflow-x: hidden;
+            background-color: #2d4159;
+            font-family: 'Rank Ocean Blond', sans-serif;
+        }
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #2d4159;
+            padding-top: 20px;
+            color: white;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.hidden {
+            margin-left: -250px;
+        }
+        .sidebar .header {
+            padding: 10px 20px;
+            border-bottom: 1px solid #004080;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sidebar .header .toggle-btn {
+            font-size: 20px;
+            cursor: pointer;
+            color: #ffffff;
+            position: absolute;
+            top: 10px;
+            right: -40px;
+            z-index: 2;
+            background-color: #2d4159;
+            border-radius: 50%;
+            padding: 10px;
+        }
+        .sidebar .header .toggle-btn:hover {
+            background-color: #28a745;
+        }
+        .sidebar .header .greeting {
+            font-size: 14px;
+            color: #ffffff;
+        }
+        .sidebar .header .logout-button {
+            margin-left: auto;
+        }
+        .sidebar .header .logout-button a {
+            padding: 5px 10px;
+            font-size: 14px;
+            color: #ffffff;
+            background-color: #d9534f;
+            border-radius: 20px;
+            text-align: center;
+            text-decoration: none;
+        }
+        .sidebar .header .logout-button a:hover {
+            background-color: #c9302c;
+        }
+        .sidebar h2 {
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 16px;
+            color: white;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #004080;
+        }
+        .sidebar a:hover {
+            background-color: #28a745;
+        }
+        .sidebar i {
+            margin-right: 10px;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s;
+        }
+        .main-content.shift {
+            margin-left: 0;
+        }
+        .container {
+            background-color: rgba(0, 64, 128, 0.8);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .btn-custom {
+            background-color: #28a745;
+            border: none;
+            color: #ffffff;
+            border-radius: 25px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .btn-custom:hover {
+            background-color: #218838;
+            color: #ffffff;
+        }
+        .flash-message {
+            margin-top: 20px;
+        }
+        .flash-message ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .flash-message li {
+            background: #d9534f;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="header">
+            <span class="toggle-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </span>
+            <div class="greeting">
+                <span>
+                    <i class="fas fa-user-circle fa-2x"></i>
+                    <br/>
+                    Seja bem-vindo, {{ session['user'] }}
+                </span>
+            </div>
+            <div class="logout-button">
+                <a href="{{ url_for('logout') }}">Sair</a>
+            </div>
+        </div>
+        <h2>Nosso Bairro</h2>
+        <a href="{{ url_for('index') }}"><i class="fas fa-plus"></i>Cadastrar Estabelecimento</a>
+        <a href="{{ url_for('meus_estabelecimentos') }}"><i class="fas fa-list"></i>Meus Estabelecimentos</a>
+        <a href="{{ url_for('search') }}"><i class="fas fa-search"></i>Pesquisar</a>
+        <!-- Nova opção adicionada -->
+        <a href="{{ url_for('perfil') }}"><i class="fas fa-user"></i>Meu Perfil</a>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <h1 class="text-center">Perfil do Usuário</h1>
+            <p><strong>Email:</strong> {{ email }}</p>
+            <p><strong>Plano:</strong> {{ plano }}</p>
+
+            {% if plano == 'free' %}
+                <form action="{{ url_for('upgrade') }}" method="post">
+                    <button type="submit" class="btn btn-custom">Atualizar para Premium</button>
+                </form>
+            {% else %}
+                <form action="{{ url_for('downgrade') }}" method="post">
+                    <button type="submit" class="btn btn-custom">Reverter para Free</button>
+                </form>
+            {% endif %}
+            
+            <br>
+            <a href="{{ url_for('index') }}" class="btn btn-custom">Voltar para o Início</a>
+            
+            <div class="flash-message">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <ul>
+                            {% for message in messages %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.querySelector('.sidebar');
+            var mainContent = document.querySelector('.main-content');
+            sidebar.classList.toggle('hidden');
+            mainContent.classList.toggle('shift');
+        }
+    </script>
+</body>
+</html>
+

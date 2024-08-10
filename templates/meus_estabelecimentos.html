@@ -128,20 +128,19 @@
             flex-direction: column;
         }
         .btn-custom {
-            background-color: #28a745;
-            border: none;
-            color: #ffffff;
-            border-radius: 25px;
-            padding: 5px 10px;
-            cursor: pointer;
-            text-align: center;
-            margin-top: 10px;
-            text-decoration: none; /* Remove underline */
+            background-color: #28a745; /* Cor de fundo */
+            border: none; /* Remove bordas padrão */
+            color: #ffffff; /* Cor do texto */
+            border-radius: 25px; /* Bordas arredondadas */
+            padding: 5px 10px; /* Espaçamento interno */
+            cursor: pointer; /* Cursor de mão para indicar clicável */
+            text-align: center; /* Alinhamento do texto */
+            margin-top: 10px; /* Espaço acima do botão */
+            text-decoration: none; /* Remove sublinhado do link */
         }
         .btn-custom:hover {
-            background-color: #218838; /* Darker green */
-            color: #ffffff; /* Ensure text color remains white */
-            text-decoration: none; /* Ensure no underline */
+            background-color: #218838; /* Cor de fundo ao passar o mouse */
+            text-decoration: none; /* Remove sublinhado do link */
         }
         .flash-message {
             margin-top: 20px;
@@ -160,10 +159,9 @@
         .card.patrocinado {
             border: 2px solid #FFD700;
         }
-        .patrocinado-badge {
+        .patrocinado-badge,
+        .oculto-badge {
             display: block;
-            background-color: #FFD700;
-            color: #003366;
             font-weight: bold;
             padding: 5px 10px;
             border-radius: 5px;
@@ -171,6 +169,14 @@
             margin-top: 10px;
             margin-bottom: 10px;
             text-align: center;
+        }
+        .patrocinado-badge {
+            background-color: #FFD700;
+            color: #003366;
+        }
+        .oculto-badge {
+            background-color: #d9534f;
+            color: #ffffff;
         }
         .info-row {
             display: flex;
@@ -210,12 +216,22 @@
         <a href="{{ url_for('index') }}"><i class="fas fa-plus"></i>Cadastrar Estabelecimento</a>
         <a href="{{ url_for('meus_estabelecimentos') }}" class="active"><i class="fas fa-list"></i>Meus Estabelecimentos</a>
         <a href="{{ url_for('search') }}"><i class="fas fa-search"></i>Pesquisar</a>
+        <a href="{{ url_for('perfil') }}"><i class="fas fa-user"></i>Meu Perfil</a>
     </div>
 
     <div class="main-content">
         <div class="container">
             <h1 class="text-center">Meus Estabelecimentos</h1>
             <br>
+            {% if flash_messages %}
+                <div class="flash-message">
+                    <ul>
+                        {% for message in flash_messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
             {% if estabelecimentos %}
                 <div class="row">
                     {% for estabelecimento in estabelecimentos %}
@@ -225,8 +241,11 @@
                                     <img src="{{ estabelecimento.imagem }}" alt="Imagem do estabelecimento" class="card-img-top">
                                 {% endif %}
                                 <div class="card-body d-flex flex-column">
-                                    {% if estabelecimento.patrocinado %}
+                                    {% if not estabelecimento.oculto and estabelecimento.patrocinado %}
                                         <div class="patrocinado-badge">Em destaque</div>
+                                    {% endif %}
+                                    {% if estabelecimento.oculto %}
+                                        <div class="oculto-badge">Oculto da pesquisa</div>
                                     {% endif %}
                                     <h5 class="card-title">{{ estabelecimento.nome }}</h5>
                                     <div class="info-row">
@@ -246,6 +265,16 @@
                                             {% endif %}
                                         </div>
                                     </div>
+                                    <!-- Botão Mostrar/Ocultar Estabelecimento -->
+                                    {% if estabelecimento.oculto %}
+                                        <form action="{{ url_for('mostrar_estabelecimento', id=estabelecimento.id) }}" method="post" onsubmit="return confirm('Tem certeza de que deseja mostrar este estabelecimento na pesquisa?');">
+                                            <button type="submit" class="btn-custom">Mostrar na pesquisa</button>
+                                        </form>
+                                    {% else %}
+                                        <form action="{{ url_for('ocultar_estabelecimento', id=estabelecimento.id) }}" method="post" onsubmit="return confirm('Tem certeza de que deseja ocultar este estabelecimento?');">
+                                            <button type="submit" class="btn-custom">Ocultar da pesquisa</button>
+                                        </form>
+                                    {% endif %}
                                     <!-- Botão Editar Estabelecimento -->
                                     <a href="{{ url_for('editar_estabelecimento', id=estabelecimento.id) }}" class="btn-custom">Editar Estabelecimento</a>
                                 </div>
