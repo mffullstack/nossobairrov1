@@ -54,10 +54,20 @@ def generate_and_save_html(descricao_estabelecimento):
 
 def check_and_send_html_to_ftp(html_content, file_name):
     try:
-        ftp = FTP("ftpupload.net", "if0_36660217", "VV6z1ZhDuhKApb")  # Substitua pelas suas credenciais FTP
+        # Conecta ao servidor FTP com as credenciais fornecidas
+        ftp = FTP("ftp.nossobairro.app.br", "sites@nossobairro.app.br", "@Equipe123")
+        
+        # Converte o conteúdo HTML em bytes
         html_file = BytesIO(html_content.encode('utf-8'))
         html_file.seek(0)
-        ftp.storbinary(f"STOR /htdocs/{file_name}", html_file)
+        
+        # Altera o diretório para a pasta desejada (substitua pelo caminho correto)
+        #ftp.cwd("/htdocs/nossobairro.app.br/sites/")
+        
+        # Envia o arquivo para a pasta especificada
+        ftp.storbinary(f"STOR {file_name}", html_file)
+        
+        # Fecha a conexão com o servidor FTP
         ftp.quit()
     except Exception as e:
         print(f"Erro ao enviar o arquivo para o FTP: {e}")
@@ -167,7 +177,7 @@ def index():
             'redes_sociais': redes_sociais,
             'tipo_servico_produto': tipo_servico_produto,
             'metodos_pagamento': metodos_pagamento,
-            'como_chegar': como_chegar,
+            #'como_chegar': como_chegar,
             'sobre_estabelecimento': sobre_estabelecimento,  # Incluindo o novo campo
             'latitude': latitude,
             'longitude': longitude,
